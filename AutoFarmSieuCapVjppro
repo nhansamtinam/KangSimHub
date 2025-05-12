@@ -33,6 +33,7 @@ local special = {
     ScorchingBuzzcut = true,
     InfernoBreath = true,
     ArcticBreath = true,
+    FingerPistolBarrage = true,
 }
 
 -- Biến toàn cục
