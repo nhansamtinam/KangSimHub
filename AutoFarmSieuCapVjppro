@@ -1,0 +1,179 @@
+_G.auto = true
+
+-- Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GuiService = game:GetService("GuiService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+local gui = player:WaitForChild("PlayerGui")
+
+-- Thiết lập kỹ năng theo từng trái
+local skills = {
+    DoughV2 = {"GrilledLance", "ElasticLasso", "Oblivion", "PowerDough", "BlazingStorm", "ScorchingBuzzcut"},
+    Ope = {"Room", "Takt", "Wreckage", "HurricaneShock", "GammaKnife", "Mes", "Shambles"},
+    LeopardV2 = {"FingerPistolBarrage", "SonicKick", "InfinityDrive", "UnrelentingAssault", "Transform", "HeavensDemise"},
+    Lightning = {"VoltageUp", "LightningPalm", "CrashingThunder", "ProjectedBurst", "CrushingJudgment", "Raigo"},
+    Nika = {"RocGun", "NeoRedHawk", "RocGatling", "RedRoc", "DrumsOfLiberation", "Gear5", "SpinningTop", "DawnRocket", "MolePistolCombo", "RisingBolt", "GigantStamp", "BajrangGun"},
+    DragonV2 = {"InfernoBreath", "ThunderBagua", "DragonTwister", "BeastsBellow", "Transform", "BoloFrenzy", "FlamingTorch", "Demolition", "Transformation"},
+    Soul = {"EnthralGrasp", "ScorchingSickle", "ZeusMeadow", "CrimsonPillar", "Transform", "MaserCannon"},
+    DarkXQuake = {"AntiQuake", "BlackHolePath", "BlackTurret", "NeoKurouzuCombo", "AntiBody", "QuadraSeaQuake"},
+    Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent"},
+}
+
+-- Kỹ năng cần MouseRay
+local special = {
+    BlackHolePath = true,
+    Room = true,
+    Shambles = true,
+    GrilledLance = true,
+    ScorchingBuzzcut = true,
+    InfernoBreath = true,
+    ArcticBreath = true,
+}
+
+-- Biến toàn cục
+local currentFruit = nil
+local currentHumanoid = nil
+local staminaBar = nil
+local THRESHOLD = 0.3
+
+-- Cập nhật trái hiện tại
+local function updateCurrentFruit()
+    local mainData = player:FindFirstChild("MAIN_DATA")
+    if not mainData then return end
+
+    local currentSlot = mainData:FindFirstChild("Slot")
+    if not currentSlot then return end
+
+    local slotValue = mainData.Slots:FindFirstChild(tostring(currentSlot.Value))
+    currentFruit = slotValue and slotValue.Value or nil
+end
+
+-- Theo dõi thay đổi trái
+local function watchSlotChanges()
+    local mainData = player:WaitForChild("MAIN_DATA", 10)
+    if not mainData then
+        warn("Không tìm thấy MAIN_DATA.")
+        return
+    end
+
+    local slot = mainData:WaitForChild("Slot", 5)
+    if not slot then
+        warn("Không tìm thấy Slot.")
+        return
+    end
+
+    slot:GetPropertyChangedSignal("Value"):Connect(updateCurrentFruit)
+    updateCurrentFruit()
+end
+
+-- Gọi chiêu
+local function castSkill(fruit, skill)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    if special[skill] then
+        local origin, target = hrp.Position, mouse.Hit.Position
+        local dir = (target - origin).Unit * 45
+        local ray = {
+            Normal = Vector3.yAxis,
+            Direction = dir,
+            Origin = origin,
+            Instance = workspace.Map.Part,
+            Distance = (target - origin).Magnitude,
+            Material = Enum.Material.Grass,
+            Position = target
+        }
+
+        ReplicatedStorage.Replicator:InvokeServer(fruit, skill, {Ground = {Position = target}, MouseRay = ray})
+        ReplicatedStorage.ReplicatorNoYield:FireServer("ClientData", "UpdateData", {RootCF = hrp.CFrame, MouseRay = ray})
+    else
+        ReplicatedStorage.ReplicatorNoYield:FireServer(fruit, skill, {})
+    end
+end
+
+-- Auto Play + dịch chuyển
+local function findPlayButton()
+    for _, guiObj in ipairs(gui:GetChildren()) do
+        if guiObj:IsA("ScreenGui") then
+            local btn = guiObj:FindFirstChild("Play", true)
+            if btn and btn:IsA("GuiButton") then
+                return btn
+            end
+        end
+    end
+    return nil
+end
+
+local function pressEnter()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+end
+
+local function fastTeleport()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp
+    repeat
+        hrp = character:FindFirstChild("HumanoidRootPart")
+        task.wait()
+    until hrp
+
+    hrp.CFrame = CFrame.new(-1420, 798.9317626953125, -85.00000762939453)
+end
+
+-- Setup reset khi năng lượng thấp
+local function setupCharacter(character)
+    currentHumanoid = character:WaitForChild("Humanoid")
+    staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
+end
+
+if player.Character then setupCharacter(player.Character) end
+player.CharacterAdded:Connect(setupCharacter)
+
+-- Chạy tất cả
+task.spawn(watchSlotChanges)
+
+task.spawn(function()
+    while true do
+        while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
+            local playButton = findPlayButton()
+            if playButton then
+                GuiService.SelectedObject = playButton
+                task.wait(0.2)
+                pressEnter()
+                task.spawn(fastTeleport)
+            end
+            task.wait(5)
+        end
+
+        repeat task.wait(0.5) until not (player.Character and player.Character:FindFirstChild("HumanoidRootPart"))
+    end
+end)
+
+task.spawn(function()
+    while _G.auto do
+        if currentFruit and skills[currentFruit] then
+            for _, skill in ipairs(skills[currentFruit]) do
+                castSkill(currentFruit, skill)
+                task.wait(0.15)
+            end
+        else
+            warn("Chưa có trái hoặc trái không có trong danh sách.")
+            task.wait(1)
+        end
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if currentHumanoid and staminaBar then
+        local percent = staminaBar.Size.X.Scale
+        if percent < THRESHOLD and currentHumanoid.Health > 0 then
+            currentHumanoid.Health = 0
+        end
+    end
+end)
