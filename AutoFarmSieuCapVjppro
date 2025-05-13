@@ -24,23 +24,11 @@ local skills = {
     Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent"},
 }
 
--- Kỹ năng cần MouseRay
-local special = {
-    BlackHolePath = true,
-    Room = true,
-    Shambles = true,
-    GrilledLance = true,
-    ScorchingBuzzcut = true,
-    InfernoBreath = true,
-    ArcticBreath = true,
-    FingerPistolBarrage = true,
-}
-
 -- Biến toàn cục
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.1
+local THRESHOLD = 0.2
 
 -- Cập nhật trái hiện tại
 local function updateCurrentFruit()
@@ -72,28 +60,25 @@ local function watchSlotChanges()
     updateCurrentFruit()
 end
 
--- Gọi chiêu
+-- Gọi chiêu (đã chỉnh sửa: tất cả kỹ năng dùng ray)
 local function castSkill(fruit, skill)
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
-if special[skill] then
-        local origin, target = hrp.Position, mouse.Hit.Position
-        local dir = (target - origin).Unit * 45
-        local ray = {
-            Normal = Vector3.yAxis,
-            Direction = dir,
-            Origin = origin,
-            Instance = workspace.Map.Part,
-            Distance = (target - origin).Magnitude,
-            Material = Enum.Material.Grass,
-            Position = target
-        }
 
-        ReplicatedStorage.Replicator:InvokeServer(fruit, skill, {Ground = {Position = target}, MouseRay = ray})
-        ReplicatedStorage.ReplicatorNoYield:FireServer("ClientData", "UpdateData", {RootCF = hrp.CFrame, MouseRay = ray})
-    else
-        ReplicatedStorage.ReplicatorNoYield:FireServer(fruit, skill, {})
-    end
+    local origin, target = hrp.Position, mouse.Hit.Position
+    local dir = (target - origin).Unit * 45
+    local ray = {
+        Normal = Vector3.yAxis,
+        Direction = dir,
+        Origin = origin,
+        Instance = workspace.Map:FindFirstChildWhichIsA("BasePart") or workspace.Terrain,
+        Distance = (target - origin).Magnitude,
+        Material = Enum.Material.Grass,
+        Position = target
+    }
+
+    ReplicatedStorage.Replicator:InvokeServer(fruit, skill, {Ground = {Position = target}, MouseRay = ray})
+    ReplicatedStorage.ReplicatorNoYield:FireServer("ClientData", "UpdateData", {RootCF = hrp.CFrame, MouseRay = ray})
 end
 
 -- Auto Play + dịch chuyển
@@ -135,9 +120,10 @@ end
 if player.Character then setupCharacter(player.Character) end
 player.CharacterAdded:Connect(setupCharacter)
 
--- Chạy tất cả
+-- Theo dõi thay đổi trái
 task.spawn(watchSlotChanges)
 
+-- Auto Play nếu chết hoặc chưa load nhân vật
 task.spawn(function()
     while true do
         while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
@@ -155,6 +141,7 @@ task.spawn(function()
     end
 end)
 
+-- Auto dùng kỹ năng
 task.spawn(function()
     while _G.auto do
         if currentFruit and skills[currentFruit] then
