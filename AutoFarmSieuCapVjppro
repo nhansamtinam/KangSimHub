@@ -1,24 +1,25 @@
 _G.auto = true
 
--- Services
+-- 📦 Dịch vụ Roblox
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GuiService = game:GetService("GuiService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
 
+-- 🧍 Người chơi
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 local gui = player:WaitForChild("PlayerGui")
 
--- Biến trạng thái
+-- ⚙️ Biến trạng thái
 local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.1 -- Reset khi mana dưới 10%
+local THRESHOLD = 0.7 -- Khi mana dưới 10% thì reset
 
--- Kỹ năng theo trái
+-- 💥 Danh sách kỹ năng theo trái ác quỷ
 local skills = {
     DoughV2 = {"GrilledLance", "ElasticLasso", "Oblivion", "PowerDough", "BlazingStorm", "ScorchingBuzzcut"},
     Ope = {"Room", "Takt", "Wreckage", "HurricaneShock", "GammaKnife", "Mes", "Shambles"},
@@ -31,7 +32,7 @@ local skills = {
     Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent"},
 }
 
--- Cập nhật trái hiện tại
+-- 🧬 Cập nhật trái hiện tại
 local function updateCurrentFruit()
     local mainData = player:FindFirstChild("MAIN_DATA")
     if not mainData then return end
@@ -43,7 +44,7 @@ local function updateCurrentFruit()
     currentFruit = slotValue and slotValue.Value or nil
 end
 
--- Theo dõi thay đổi trái
+-- 👀 Theo dõi thay đổi slot trái
 local function watchSlotChanges()
     local mainData = player:WaitForChild("MAIN_DATA", 10)
     if not mainData then return end
@@ -55,7 +56,7 @@ local function watchSlotChanges()
     updateCurrentFruit()
 end
 
--- Gọi kỹ năng
+-- 🧠 Gọi kỹ năng trái
 local function castSkill(fruit, skill)
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
@@ -76,7 +77,7 @@ local function castSkill(fruit, skill)
     ReplicatedStorage.ReplicatorNoYield:FireServer("ClientData", "UpdateData", {RootCF = hrp.CFrame, MouseRay = ray})
 end
 
--- Tìm nút Play
+-- 🔍 Tìm nút Play trên GUI
 local function findPlayButton()
     for _, guiObj in ipairs(gui:GetChildren()) do
         if guiObj:IsA("ScreenGui") then
@@ -89,14 +90,14 @@ local function findPlayButton()
     return nil
 end
 
--- Nhấn phím Enter
+-- ⌨️ Mô phỏng nhấn Enter
 local function pressEnter()
     VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
     task.wait(0.05)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
 end
 
--- Dịch chuyển nhanh sau khi vào game
+-- 📍 Dịch chuyển sau khi vào game
 local function fastTeleport()
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp
@@ -104,32 +105,20 @@ local function fastTeleport()
     hrp.CFrame = CFrame.new(-1420, 798.93, -85)
 end
 
--- Dịch chuyển đến chỗ chết (dưới map)
-local function teleportToKillZone()
-    local character = player.Character
-    if character then
-        local hrp = character:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            warn("⚠️ Mana thấp! Dịch chuyển để tự sát...")
-            hrp.CFrame = CFrame.new(0, -500, 0) -- Tọa độ chết (dưới map)
-        end
-    end
-end
-
--- Cập nhật nhân vật
+-- 🧠 Gắn nhân vật hiện tại
 local function setupCharacter(character)
     currentHumanoid = character:WaitForChild("Humanoid")
     staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
 end
 
--- Theo dõi nhân vật mới
+-- 👂 Theo dõi nhân vật mới
 if player.Character then setupCharacter(player.Character) end
 player.CharacterAdded:Connect(setupCharacter)
 
--- Theo dõi thay đổi trái
+-- 🕵️ Theo dõi thay đổi trái
 task.spawn(watchSlotChanges)
 
--- Tự nhấn Play và teleport
+-- ▶️ Tự nhấn Play và dịch chuyển vào game
 task.spawn(function()
     while true do
         while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
@@ -150,17 +139,30 @@ task.spawn(function()
     end
 end)
 
--- Reset nếu mana thấp (bằng cách dịch chuyển chết)
+-- 🧠 Reset khi mana thấp (mô phỏng người dùng bấm Esc + R + Enter)
 RunService.Heartbeat:Connect(function()
     if _G.auto and _isInGame and staminaBar and currentHumanoid then
         local percent = staminaBar.Size.X.Scale
         if percent <= THRESHOLD and currentHumanoid.Health > 0 then
-            teleportToKillZone()
+            warn("⚠️ Mana thấp! Đang reset nhân vật...")
+            task.spawn(function()
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Escape, false, game)
+                task.wait(0.2)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Escape, false, game)
+                task.wait(0.2)
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
+                task.wait(0.2)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
+                task.wait(0.2)
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                task.wait(0.2)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+            end)
         end
     end
 end)
 
--- Tự dùng kỹ năng liên tục
+-- 🔁 Tự dùng kỹ năng liên tục khi đủ mana
 task.spawn(function()
     while _G.auto do
         if _isInGame and currentFruit and skills[currentFruit] and staminaBar then
