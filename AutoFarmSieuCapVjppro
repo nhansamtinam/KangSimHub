@@ -28,7 +28,7 @@ local skills = {
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.2
+local THRESHOLD = 0.1 -- Dưới 10% sẽ reset
 
 -- Cập nhật trái hiện tại
 local function updateCurrentFruit()
@@ -60,7 +60,7 @@ local function watchSlotChanges()
     updateCurrentFruit()
 end
 
--- Gọi chiêu (đã chỉnh sửa: tất cả kỹ năng dùng ray)
+-- Gọi chiêu
 local function castSkill(fruit, skill)
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
@@ -136,22 +136,37 @@ task.spawn(function()
             end
             task.wait(5)
         end
-
         repeat task.wait(0.5) until not (player.Character and player.Character:FindFirstChild("HumanoidRootPart"))
+    end
+end)
+
+-- Auto reset khi mana < 10%
+RunService.Heartbeat:Connect(function()
+    if _G.auto and staminaBar and currentHumanoid then
+        local percent = staminaBar.Size.X.Scale
+        if percent <= THRESHOLD then
+            print("⚠️ Mana thấp! Reset...")
+            currentHumanoid:TakeDamage(currentHumanoid.MaxHealth)
+        end
     end
 end)
 
 -- Auto dùng kỹ năng
 task.spawn(function()
     while _G.auto do
-        if currentFruit and skills[currentFruit] then
-            for _, skill in ipairs(skills[currentFruit]) do
-                castSkill(currentFruit, skill)
-                task.wait(0.15)
+        if currentFruit and skills[currentFruit] and staminaBar then
+            local manaPercent = staminaBar.Size.X.Scale
+            if manaPercent > THRESHOLD then
+                for _, skill in ipairs(skills[currentFruit]) do
+                    castSkill(currentFruit, skill)
+                    task.wait(0.15)
+                    if staminaBar.Size.X.Scale <= THRESHOLD then
+                        break
+                    end
+                end
             end
         else
-            warn("Chưa có trái hoặc trái không có trong danh sách.")
-            task.wait(1)
+            task.wait(0.5)
         end
     end
 end)
