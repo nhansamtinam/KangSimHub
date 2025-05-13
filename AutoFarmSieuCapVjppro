@@ -15,8 +15,6 @@ local gui = player:WaitForChild("PlayerGui")
 local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
-local staminaBar = nil
-local THRESHOLD = 0.3 -- Reset khi mana dưới 10%
 
 -- Kỹ năng theo trái
 local skills = {
@@ -135,17 +133,6 @@ task.spawn(function()
         end
         repeat task.wait(0.5) until not (player.Character and player.Character:FindFirstChild("HumanoidRootPart"))
         _isInGame = false
-    end
-end)
-
--- Reset nếu mana thấp (dùng Health = 0)
-RunService.Heartbeat:Connect(function()
-    if _G.auto and _isInGame and staminaBar and currentHumanoid then
-        local percent = staminaBar.Size.X.Scale
-        if percent <= THRESHOLD and currentHumanoid.Health > 0 then
-            warn("⚠️ Mana thấp! Đang reset (Health = 0)...")
-            currentHumanoid.Health = 0
-        end
     end
 end)
 
