@@ -17,7 +17,7 @@ local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.7 -- Khi mana dưới 10% thì reset
+local THRESHOLD = 0.0000000000000000000000000000000000000000007 -- Khi mana dưới 10% thì reset
 
 -- 💥 Danh sách kỹ năng theo trái ác quỷ
 local skills = {
