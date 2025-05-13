@@ -40,7 +40,7 @@ local special = {
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.3
+local THRESHOLD = 0.1
 
 -- Cập nhật trái hiện tại
 local function updateCurrentFruit()
