@@ -11,12 +11,12 @@ local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 local gui = player:WaitForChild("PlayerGui")
 
--- Trạng thái
+-- Biến trạng thái
 local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.1 -- dưới 10% mana thì reset
+local THRESHOLD = 0.3 -- Reset khi mana dưới 10%
 
 -- Kỹ năng theo trái
 local skills = {
@@ -89,32 +89,14 @@ local function findPlayButton()
     return nil
 end
 
--- Nhấn Enter
+-- Nhấn phím Enter
 local function pressEnter()
     VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
     task.wait(0.05)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
 end
 
--- Nhấn Esc + R + Enter để reset
-local function resetByKey()
-    warn("⚠️ Reset bằng ESC + R + ENTER")
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Escape, false, game)
-    task.wait(0.1)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Escape, false, game)
-    task.wait(0.3)
-
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
-    task.wait(0.1)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
-    task.wait(0.3)
-
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-    task.wait(0.1)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-end
-
--- Dịch chuyển nhanh
+-- Dịch chuyển nhanh sau khi vào game
 local function fastTeleport()
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp
@@ -122,32 +104,20 @@ local function fastTeleport()
     hrp.CFrame = CFrame.new(-1420, 798.93, -85)
 end
 
--- Setup lại Humanoid & Stamina sau khi reset
+-- Cập nhật nhân vật
 local function setupCharacter(character)
-    task.defer(function()
-        currentHumanoid = character:WaitForChild("Humanoid", 5)
-        local gui = player:WaitForChild("PlayerGui", 5)
-        if gui then
-            local success, result = pcall(function()
-                return gui:WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
-            end)
-            if success then
-                staminaBar = result
-            else
-                warn("Không tìm thấy StaminaBar")
-            end
-        end
-    end)
+    currentHumanoid = character:WaitForChild("Humanoid")
+    staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
 end
 
--- Theo dõi nhân vật
+-- Theo dõi nhân vật mới
 if player.Character then setupCharacter(player.Character) end
 player.CharacterAdded:Connect(setupCharacter)
 
--- Theo dõi slot trái
+-- Theo dõi thay đổi trái
 task.spawn(watchSlotChanges)
 
--- Auto Play và Teleport
+-- Tự nhấn Play và teleport
 task.spawn(function()
     while true do
         while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
@@ -168,17 +138,18 @@ task.spawn(function()
     end
 end)
 
--- Auto reset nếu mana < 10%
+-- Reset nếu mana thấp (dùng Health = 0)
 RunService.Heartbeat:Connect(function()
     if _G.auto and _isInGame and staminaBar and currentHumanoid then
         local percent = staminaBar.Size.X.Scale
         if percent <= THRESHOLD and currentHumanoid.Health > 0 then
-            resetByKey()
+            warn("⚠️ Mana thấp! Đang reset (Health = 0)...")
+            currentHumanoid.Health = 0
         end
     end
 end)
 
--- Auto dùng kỹ năng
+-- Tự dùng kỹ năng liên tục
 task.spawn(function()
     while _G.auto do
         if _isInGame and currentFruit and skills[currentFruit] and staminaBar then
