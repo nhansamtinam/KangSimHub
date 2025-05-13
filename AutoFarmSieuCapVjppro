@@ -16,7 +16,7 @@ local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.0000001 -- Reset khi mana dưới 10%
+local THRESHOLD = 0.00000000000000000000000000001 -- Reset khi mana dưới 10%
 
 -- Kỹ năng theo trái
 local skills = {
