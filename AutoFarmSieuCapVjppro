@@ -130,7 +130,6 @@ task.spawn(function()
                 GuiService.SelectedObject = playButton
                 task.wait(0.2)
                 pressEnter()
-                -- Đánh dấu đã vào game sau 1 giây
                 task.delay(1, function()
                     _isInGame = true
                     fastTeleport()
@@ -139,17 +138,20 @@ task.spawn(function()
             task.wait(5)
         end
         repeat task.wait(0.5) until not (player.Character and player.Character:FindFirstChild("HumanoidRootPart"))
-        _isInGame = false -- reset trạng thái khi nhân vật biến mất
+        _isInGame = false
     end
 end)
 
--- Auto reset khi mana < 10%
+-- Auto reset khi mana < 10% (dùng LoadCharacter để tránh đơ)
 RunService.Heartbeat:Connect(function()
     if _G.auto and _isInGame and staminaBar and currentHumanoid then
         local percent = staminaBar.Size.X.Scale
         if percent <= THRESHOLD then
-            print("⚠️ Mana thấp! Reset...")
-            currentHumanoid:TakeDamage(currentHumanoid.MaxHealth)
+            print("⚠️ Mana thấp! Reset bằng LoadCharacter...")
+            _isInGame = false
+            player:LoadCharacter()
+            task.wait(2)
+            _isInGame = true
         end
     end
 end)
