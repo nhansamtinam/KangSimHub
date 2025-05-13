@@ -16,7 +16,7 @@ local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.00000000000000000000000000001 -- Reset khi mana dưới 10%
+local THRESHOLD = 0.1 -- Reset khi mana dưới 10%
 
 -- Kỹ năng theo trái
 local skills = {
@@ -104,6 +104,18 @@ local function fastTeleport()
     hrp.CFrame = CFrame.new(-1420, 798.93, -85)
 end
 
+-- Dịch chuyển đến chỗ chết (dưới map)
+local function teleportToKillZone()
+    local character = player.Character
+    if character then
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            warn("⚠️ Mana thấp! Dịch chuyển để tự sát...")
+            hrp.CFrame = CFrame.new(0, -500, 0) -- Tọa độ chết (dưới map)
+        end
+    end
+end
+
 -- Cập nhật nhân vật
 local function setupCharacter(character)
     currentHumanoid = character:WaitForChild("Humanoid")
@@ -138,13 +150,12 @@ task.spawn(function()
     end
 end)
 
--- Reset nếu mana thấp (dùng Health = 0)
+-- Reset nếu mana thấp (bằng cách dịch chuyển chết)
 RunService.Heartbeat:Connect(function()
     if _G.auto and _isInGame and staminaBar and currentHumanoid then
         local percent = staminaBar.Size.X.Scale
         if percent <= THRESHOLD and currentHumanoid.Health > 0 then
-            warn("⚠️ Mana thấp! Đang reset (Health = 0)...")
-            currentHumanoid.Health = 0
+            teleportToKillZone()
         end
     end
 end)
