@@ -11,6 +11,13 @@ local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 local gui = player:WaitForChild("PlayerGui")
 
+-- Biến trạng thái
+local _isInGame = false
+local currentFruit = nil
+local currentHumanoid = nil
+local staminaBar = nil
+local THRESHOLD = 0.1 -- Dưới 10% sẽ reset
+
 -- Thiết lập kỹ năng theo từng trái
 local skills = {
     DoughV2 = {"GrilledLance", "ElasticLasso", "Oblivion", "PowerDough", "BlazingStorm", "ScorchingBuzzcut"},
@@ -23,12 +30,6 @@ local skills = {
     DarkXQuake = {"AntiQuake", "BlackHolePath", "BlackTurret", "NeoKurouzuCombo", "AntiBody", "QuadraSeaQuake"},
     Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent"},
 }
-
--- Biến toàn cục
-local currentFruit = nil
-local currentHumanoid = nil
-local staminaBar = nil
-local THRESHOLD = 0.1 -- Dưới 10% sẽ reset
 
 -- Cập nhật trái hiện tại
 local function updateCurrentFruit()
@@ -45,16 +46,10 @@ end
 -- Theo dõi thay đổi trái
 local function watchSlotChanges()
     local mainData = player:WaitForChild("MAIN_DATA", 10)
-    if not mainData then
-        warn("Không tìm thấy MAIN_DATA.")
-        return
-    end
+    if not mainData then return end
 
     local slot = mainData:WaitForChild("Slot", 5)
-    if not slot then
-        warn("Không tìm thấy Slot.")
-        return
-    end
+    if not slot then return end
 
     slot:GetPropertyChangedSignal("Value"):Connect(updateCurrentFruit)
     updateCurrentFruit()
@@ -81,7 +76,7 @@ local function castSkill(fruit, skill)
     ReplicatedStorage.ReplicatorNoYield:FireServer("ClientData", "UpdateData", {RootCF = hrp.CFrame, MouseRay = ray})
 end
 
--- Auto Play + dịch chuyển
+-- Tìm nút Play
 local function findPlayButton()
     for _, guiObj in ipairs(gui:GetChildren()) do
         if guiObj:IsA("ScreenGui") then
@@ -94,12 +89,14 @@ local function findPlayButton()
     return nil
 end
 
+-- Gửi phím Enter (tự nhấn Play)
 local function pressEnter()
     VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
     task.wait(0.05)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
 end
 
+-- Dịch chuyển nhanh sau khi vào game
 local function fastTeleport()
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp
@@ -111,19 +108,20 @@ local function fastTeleport()
     hrp.CFrame = CFrame.new(-1420, 798.9317626953125, -85.00000762939453)
 end
 
--- Setup reset khi năng lượng thấp
+-- Khi nhân vật mới được tạo
 local function setupCharacter(character)
     currentHumanoid = character:WaitForChild("Humanoid")
     staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
 end
 
+-- Theo dõi nhân vật
 if player.Character then setupCharacter(player.Character) end
 player.CharacterAdded:Connect(setupCharacter)
 
 -- Theo dõi thay đổi trái
 task.spawn(watchSlotChanges)
 
--- Auto Play nếu chết hoặc chưa load nhân vật
+-- Auto nhấn nút Play nếu cần
 task.spawn(function()
     while true do
         while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
@@ -132,17 +130,22 @@ task.spawn(function()
                 GuiService.SelectedObject = playButton
                 task.wait(0.2)
                 pressEnter()
-                task.spawn(fastTeleport)
+                -- Đánh dấu đã vào game sau 1 giây
+                task.delay(1, function()
+                    _isInGame = true
+                    fastTeleport()
+                end)
             end
             task.wait(5)
         end
         repeat task.wait(0.5) until not (player.Character and player.Character:FindFirstChild("HumanoidRootPart"))
+        _isInGame = false -- reset trạng thái khi nhân vật biến mất
     end
 end)
 
 -- Auto reset khi mana < 10%
 RunService.Heartbeat:Connect(function()
-    if _G.auto and staminaBar and currentHumanoid then
+    if _G.auto and _isInGame and staminaBar and currentHumanoid then
         local percent = staminaBar.Size.X.Scale
         if percent <= THRESHOLD then
             print("⚠️ Mana thấp! Reset...")
@@ -154,7 +157,7 @@ end)
 -- Auto dùng kỹ năng
 task.spawn(function()
     while _G.auto do
-        if currentFruit and skills[currentFruit] and staminaBar then
+        if _isInGame and currentFruit and skills[currentFruit] and staminaBar then
             local manaPercent = staminaBar.Size.X.Scale
             if manaPercent > THRESHOLD then
                 for _, skill in ipairs(skills[currentFruit]) do
