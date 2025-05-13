@@ -40,7 +40,7 @@ local special = {
 local currentFruit = nil
 local currentHumanoid = nil
 local staminaBar = nil
-local THRESHOLD = 0.1
+local THRESHOLD = 0.3
 
 -- Cập nhật trái hiện tại
 local function updateCurrentFruit()
@@ -74,26 +74,16 @@ end
 
 -- Gọi chiêu
 local function castSkill(fruit, skill)
-    local char = player.Character
-    if not char then return end
-
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-
-    if special[skill] then
-        if not mouse or not mouse.Hit or not mouse.Hit.Position then
-            warn("[castSkill] Mouse chưa sẵn sàng cho kỹ năng đặc biệt:", skill)
-            return
-        end
-
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+if special[skill] then
         local origin, target = hrp.Position, mouse.Hit.Position
         local dir = (target - origin).Unit * 45
-
         local ray = {
             Normal = Vector3.yAxis,
             Direction = dir,
             Origin = origin,
-            Instance = workspace.Map:FindFirstChild("Part") or workspace:FindFirstChildWhichIsA("BasePart"),
+            Instance = workspace.Map.Part,
             Distance = (target - origin).Magnitude,
             Material = Enum.Material.Grass,
             Position = target
@@ -138,17 +128,16 @@ end
 
 -- Setup reset khi năng lượng thấp
 local function setupCharacter(character)
-    currentHumanoid = character:WaitForChild("Humanoid", 5)
+    currentHumanoid = character:WaitForChild("Humanoid")
     staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
 end
 
 if player.Character then setupCharacter(player.Character) end
 player.CharacterAdded:Connect(setupCharacter)
 
--- Theo dõi slot trái
+-- Chạy tất cả
 task.spawn(watchSlotChanges)
 
--- Auto chọn nút Play + dịch chuyển
 task.spawn(function()
     while true do
         while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
@@ -166,47 +155,16 @@ task.spawn(function()
     end
 end)
 
--- ✅ Auto dùng chiêu có chống lỗi
 task.spawn(function()
-    while true do
-        local success, err = pcall(function()
-            while _G.auto do
-                if currentFruit and skills[currentFruit] then
-                    for _, skill in ipairs(skills[currentFruit]) do
-                        if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
-                            warn("[AutoSkill] Chưa có nhân vật đầy đủ, đợi...")
-                            break
-                        end
-
-                        if special[skill] and (not mouse or not mouse.Hit or not mouse.Hit.Position) then
-                            warn("[AutoSkill] Mouse không sẵn sàng cho:", skill)
-                            continue
-                        end
-
-                        print("[AutoSkill] Dùng chiêu:", skill)
-                        castSkill(currentFruit, skill)
-                        task.wait(0.15)
-                    end
-                else
-                    warn("[AutoSkill] Không có trái hợp lệ hoặc chưa hỗ trợ.")
-                    task.wait(1)
-                end
+    while _G.auto do
+        if currentFruit and skills[currentFruit] then
+            for _, skill in ipairs(skills[currentFruit]) do
+                castSkill(currentFruit, skill)
+                task.wait(0.15)
             end
-        end)
-
-        if not success then
-            warn("[AutoSkill] Lỗi xảy ra:", err)
-        end
-        task.wait(1) -- hồi phục sau lỗi
-    end
-end)
-
--- Theo dõi năng lượng và tự reset
-RunService.RenderStepped:Connect(function()
-    if currentHumanoid and staminaBar then
-        local percent = staminaBar.Size.X.Scale
-        if percent < THRESHOLD and currentHumanoid.Health > 0 then
-            currentHumanoid.Health = 0
+        else
+            warn("Chưa có trái hoặc trái không có trong danh sách.")
+            task.wait(1)
         end
     end
 end)
