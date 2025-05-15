@@ -1,0 +1,32 @@
+shared.autoCheckMana = shared.autoCheckMana or false
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+local Stamina = Character:WaitForChild("Stamina") -- Giả sử Stamina là một giá trị IntValue/NumberValue trong Character
+
+local function resetCharacter()
+    if LocalPlayer and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.Health = 0
+    end
+end
+
+task.spawn(function()
+    while shared.autoCheckMana do
+        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Stamina") then
+            task.wait(1)
+            continue
+        end
+
+        local staminaValue = LocalPlayer.Character.Stamina.Value
+        if staminaValue <= 10 then -- Nếu stamina dưới 10%
+            resetCharacter()
+            print("[AutoCheckMana] Đã reset do stamina thấp.")
+            task.wait(30) -- chờ 30 giây sau khi reset mới kiểm tra tiếp
+        else
+            task.wait(1)
+        end
+    end
+    print("[AutoCheckMana] Đã tắt Auto Check Mana.")
+end)
