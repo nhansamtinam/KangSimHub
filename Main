@@ -131,8 +131,8 @@ Tabs.Misc:AddButton("Boost FPS", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Boost%20FPS"))()
 end)
 
--- Biến lưu slot được chọn, mặc định 2
-local selectedSlot = 2
+-- Biến lưu slot được chọn, mặc định 1
+local selectedSlot = 1
 
 -- Ô chọn số từ 1 đến 8
 Tabs.Misc:AddDropdown("SlotSelector", {
