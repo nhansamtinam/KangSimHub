@@ -1,0 +1,40 @@
+local codes = {
+    "WOW850",
+    "860KHYPEE",
+    "870OMG!",
+    "LOLX880K!",
+    "IAMLEOPARD",
+    "BIGUPDATE20",
+    "ANTICIPATION",
+    "BIGDAY",
+    "MAGNIFICENT890K!!",
+    "OMG9HUNDRED!",
+    "WOWZER910",
+    "HYPEE920K!",
+    "930KINS4NITY"
+}
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Replicator = ReplicatedStorage:WaitForChild("Replicator")
+
+for _, code in ipairs(codes) do
+    local args = {
+        [1] = "Codes",
+        [2] = "Redeem",
+        [3] = {
+            ["Code"] = code
+        }
+    }
+
+    local result
+    local success, errorMsg = pcall(function()
+        result = Replicator:InvokeServer(unpack(args))
+    end)
+
+    if success then
+        print("Đã thử code:", code, "=> Kết quả:", result)
+    else
+        print("Lỗi khi thử code:", code, "=> Lỗi:", errorMsg)
+    end
+    task.wait(1) -- tránh spam quá nhanh
+end
