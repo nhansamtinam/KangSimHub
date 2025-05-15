@@ -1,0 +1,58 @@
+local rareFruits = {
+    "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
+    "Ope", "Okuchi", "Soul", "Lightning"
+}
+
+local function isRare(fruitName)
+    for _, v in ipairs(rareFruits) do
+        if string.lower(v) == string.lower(fruitName) then
+            return true
+        end
+    end
+    return false
+end
+
+local player = game.Players.LocalPlayer
+local currentSlot = 1
+local maxSlot = 4
+local autoSpin = true
+
+local function getEquippedFruit()
+    local slot = player:FindFirstChild("MAIN_DATA") and player.MAIN_DATA.Slots[tostring(currentSlot)]
+    return slot and slot.Value or nil
+end
+
+while autoSpin do
+    local equipped = getEquippedFruit()
+    print("Slot", currentSlot, "cầm:", equipped)
+    
+    if equipped and isRare(equipped) then
+        print("Gặp trái hiếm:", equipped)
+
+        -- ✅ Hiện thông báo ra màn hình
+        pcall(function()
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "🎉 Trái hiếm!",
+                Text = player.DisplayName .. " vừa quay được: " .. equipped,
+                Duration = 6,
+                Icon = "rbxassetid://138706932256796"
+            })
+        end)
+
+        if currentSlot < maxSlot then
+            currentSlot += 1
+            Replicator:InvokeServer("FruitsHandler", "SwitchSlot", {Slot = currentSlot})
+            task.wait(1.5)
+        else
+            print("Dừng spin, hết slot")
+            autoSpin = false
+            break
+        end
+    else
+        print("Spin tiếp...")
+        Replicator:InvokeServer("FruitsHandler", "Spin", {})
+        task.wait(2.5)
+    end
+
+    task.wait(1)
+end
