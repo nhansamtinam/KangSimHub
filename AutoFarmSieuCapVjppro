@@ -138,35 +138,25 @@ local function castSkill(fruit, skill)
     end
 end
 
--- 🔁 Spam kỹ năng với khả năng bật/tắt
+-- 🔁 Spam kỹ năng
 local skillLoopRunning = false
-local skillLoopThread = nil
-
 local function startSkillLoop()
     if skillLoopRunning then return end
     skillLoopRunning = true
-    skillLoopThread = task.spawn(function()
-        while _G.auto and _isInGame and characterReady and currentFruit and skills[currentFruit] do
-            for _, skill in ipairs(skills[currentFruit]) do
-                if not (_G.auto and _isInGame and characterReady) then break end
-                castSkill(currentFruit, skill)
-                task.wait(0.15)
+    task.spawn(function()
+        while true do
+            if _G.auto and _isInGame and characterReady and currentFruit and skills[currentFruit] then
+                for _, skill in ipairs(skills[currentFruit]) do
+                    if not (_isInGame and characterReady) then break end
+                    castSkill(currentFruit, skill)
+                    task.wait(0.15) -- Thời gian nhỏ hơn để phản hồi nhanh hơn
+                end
+            else
+                task.wait(0.5)
             end
-            task.wait(0.1)
         end
-        skillLoopRunning = false
     end)
 end
-
--- Tự động kiểm tra toggle và chạy hoặc dừng skill loop
-task.spawn(function()
-    while true do
-        if _G.auto then
-            startSkillLoop()
-        end
-        task.wait(1)
-    end
-end)
 
 -- 🔍 Tìm nút Play
 local function findPlayButton()
@@ -247,3 +237,4 @@ task.spawn(function()
 end)
 
 watchSlotChanges()
+startSkillLoop()
