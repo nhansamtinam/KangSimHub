@@ -1,6 +1,6 @@
 local rareFruits = {
     "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
-    "Ope", "Okuchi", "Soul", "Lightning"
+    "Ope", "Okuchi", "Soul", "Lightning","Chop"
 }
 
 local function isRare(fruitName)
