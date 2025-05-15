@@ -1,6 +1,8 @@
+local player = game.Players.LocalPlayer
+
 local rareFruits = {
     "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
-    "Ope", "Okuchi", "Soul", "Lightning","Chop"
+    "Ope", "Okuchi", "Soul", "Lightning"
 }
 
 local function isRare(fruitName)
@@ -12,7 +14,6 @@ local function isRare(fruitName)
     return false
 end
 
-local player = game.Players.LocalPlayer
 local currentSlot = 1
 local maxSlot = 4
 local autoSpin = true
@@ -25,16 +26,16 @@ end
 while autoSpin do
     local equipped = getEquippedFruit()
     print("Slot", currentSlot, "cầm:", equipped)
-    
+
     if equipped and isRare(equipped) then
         print("Gặp trái hiếm:", equipped)
 
-        -- ✅ Hiện thông báo ra màn hình
+        -- ✅ Hiển thị thông báo lên màn hình
         pcall(function()
             game.StarterGui:SetCore("SendNotification", {
-                Title = "🎉 Trái hiếm!",
-                Text = player.DisplayName .. " vừa quay được: " .. equipped,
-                Duration = 6,
+                Title = "🎉 TRÁI HIẾM!",
+                Text = player.DisplayName .. " quay được: " .. equipped,
+                Duration = 7,
                 Icon = "rbxassetid://138706932256796"
             })
         end)
