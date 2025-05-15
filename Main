@@ -213,6 +213,8 @@ Tabs.Misc:AddButton({
 
 -- Map Teleport
 local selectedMapId = 9224601490
+local manualTeleporting = false
+
 Tabs.Sever:AddDropdown("MapSelector", {
     Title = "Chọn Map",
     Values = { "Dressrosa", "Wano", "Whole Cake", "Ranked Map" },
@@ -234,10 +236,10 @@ Tabs.Sever:AddButton({
     Title = "Teleport Đến Map",
     Description = "Dịch chuyển đến map đã chọn",
     Callback = function()
+        manualTeleporting = true
         game:GetService("TeleportService"):Teleport(selectedMapId)
     end
 })
-
 -- Auto Rejoin Setup
 local rejoinDelay = 10800
 local hourInput = 0
