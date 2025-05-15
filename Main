@@ -15,8 +15,8 @@ if not validKeys[getgenv().Key] then
 end
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "KangSimHub",
-    Text = "Loaded thành công!",
+    Title = "KimSoi Hub",
+    Text = "Đã Tải Xong",
     Duration = 10,
     Icon = "rbxassetid://138706932256796"
 })
@@ -28,8 +28,8 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 local Window = Fluent:CreateWindow({
-    Title = "KangSimHub",
-    SubTitle = "By KimSoi And Sang Ngu",
+    Title = "KimSoi Hub",
+    SubTitle = "By KimSoi",
     TabWidth = 160,
     Size = UDim2.fromOffset(540, 450),
     Acrylic = true,
@@ -111,111 +111,12 @@ Tabs.Main:AddToggle("AutoBossToggle", {
 })
 
 -- 🔘 Auto Check Mana Toggle
-local isManaCheckRunning = false
-local manaConnection
-Tabs.Main:AddToggle("AutoCheckMana", {
+Tabs.Main:AddToggle("AutoBossToggle", {
     Title = "Auto Check Mana",
     Default = false,
     Callback = function(value)
-        isManaCheckRunning = value
         if value then
-            spawn(function()
-                local Players = game:GetService("Players")
-                local RunService = game:GetService("RunService")
-                local player = Players.LocalPlayer
-                local THRESHOLD = 0.1
-                local currentHumanoid = nil
-                local staminaBar = nil
-                local canAct = false
-                local initialDelay = 30
-
-                local function resetCharacter()
-                    if currentHumanoid then
-                        currentHumanoid.Health = 0
-                    end
-                end
-
-                local function setupCharacter(character)
-                    currentHumanoid = character:WaitForChild("Humanoid")
-                    staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
-                end
-
-                if player.Character then
-                    setupCharacter(player.Character)
-                end
-
-                player.CharacterAdded:Connect(function(char)
-                    setupCharacter(char)
-                end)
-
-                task.wait(initialDelay)
-                canAct = true
-
-                manaConnection = RunService.RenderStepped:Connect(function()
-                    if not isManaCheckRunning then
-                        if manaConnection then manaConnection:Disconnect() end
-                        return
-                    end
-
-                    if currentHumanoid and staminaBar then
-                        local percent = staminaBar.Size.X.Scale
-                        if percent < THRESHOLD and currentHumanoid.Health > 0 and canAct then
-                            resetCharacter()
-                            canAct = false
-                            task.wait(30)
-                            canAct = true
-                        end
-                    end
-                end)
-            end)
-        else
-            if manaConnection then
-                manaConnection:Disconnect()
-                manaConnection = nil
-            end
-        end
-    end
-})
-
--- 📝 Misc Tab: Info + Slot Fruit Changer
-Tabs.Misc:AddLabel("KangSimHub by KimSoi & Sang Ngu")
-
--- Dropdown + Button đổi slot fruit
-local selectedSlot = 1
-
-Tabs.Misc:AddDropdown("FruitSlotDropdown", {
-    Title = "Chọn slot fruit",
-    Values = {"1", "2", "3", "4", "5", "6", "7", "8"},
-    Default = "1",
-    Callback = function(value)
-        selectedSlot = tonumber(value)
-    end
-})
-
-Tabs.Misc:AddButton({
-    Title = "Đổi Slot",
-    Description = "Chuyển slot fruit đã chọn",
-    Callback = function()
-        if selectedSlot and selectedSlot >= 1 and selectedSlot <= 8 then
-            local args = {
-                "FruitsHandler",
-                "SwitchSlot",
-                {
-                    Slot = selectedSlot
-                }
-            }
-            game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Đổi Slot",
-                Text = "Đã chuyển sang slot số " .. selectedSlot,
-                Duration = 5
-            })
-        else
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Lỗi",
-                Text = "Slot không hợp lệ",
-                Duration = 5
-            })
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Check%20Mana"))()
         end
     end
 })
