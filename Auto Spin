@@ -1,4 +1,5 @@
 local player = game.Players.LocalPlayer
+local Replicator = game:GetService("ReplicatedStorage") -- giả sử Replicator là ReplicatedStorage, bạn thay đúng path
 
 local rareFruits = {
     "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
@@ -19,8 +20,17 @@ local maxSlot = 4
 local autoSpin = true
 
 local function getEquippedFruit()
-    local slot = player:FindFirstChild("MAIN_DATA") and player.MAIN_DATA.Slots[tostring(currentSlot)]
-    return slot and slot.Value or nil
+    local mainData = player:FindFirstChild("MAIN_DATA")
+    if mainData then
+        local slots = mainData:FindFirstChild("Slots")
+        if slots then
+            local slot = slots:FindFirstChild(tostring(currentSlot))
+            if slot then
+                return slot.Value
+            end
+        end
+    end
+    return nil
 end
 
 while autoSpin do
@@ -30,7 +40,7 @@ while autoSpin do
     if equipped and isRare(equipped) then
         print("Gặp trái hiếm:", equipped)
 
-        -- ✅ Hiển thị thông báo lên màn hình
+        -- Thông báo lên màn hình
         pcall(function()
             game.StarterGui:SetCore("SendNotification", {
                 Title = "🎉 TRÁI HIẾM!",
@@ -40,6 +50,7 @@ while autoSpin do
             })
         end)
 
+        -- Nếu chưa phải slot cuối, chuyển sang slot tiếp theo
         if currentSlot < maxSlot then
             currentSlot += 1
             Replicator:InvokeServer("FruitsHandler", "SwitchSlot", {Slot = currentSlot})
