@@ -127,12 +127,12 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
 })
 
 -- 🔢 Dropdown Chọn Slot (1 đến 8)
-local selectedSlot = 2 -- mặc định
+local selectedSlot = 1 -- mặc định
 Tabs.Misc:AddDropdown("SlotSelector", {
     Title = "Chọn Slot Trái Ác Quỷ",
     Values = { "1", "2", "3", "4", "5", "6", "7", "8" },
     Multi = false,
-    Default = "2",
+    Default = "1",
     Callback = function(value)
         selectedSlot = tonumber(value)
         print("Đã chọn slot: " .. selectedSlot)
