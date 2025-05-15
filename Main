@@ -1,4 +1,4 @@
---Main
+--Script Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "caa72c81673275da083638d9"
@@ -39,7 +39,7 @@ local Window = Fluent:CreateWindow({
 
 SaveManager:LoadAutoloadConfig()
 
--- Toggle Icon (nút tròn trắng giống ảnh)
+-- Toggle Icon
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local ImageLabel = Instance.new("ImageLabel")
@@ -88,7 +88,7 @@ local Tabs = {
     Player = Window:AddTab({ Title = "Player", Icon = "" })
 }
 
--- 🔘 Auto Farm Toggle
+-- Auto Farm
 local autoFarmEnabled = false
 Tabs.Main:AddToggle("AutoFarmToggle", {
     Title = "Auto Farm",
@@ -102,7 +102,7 @@ Tabs.Main:AddToggle("AutoFarmToggle", {
     end
 })
 
--- 🔘 Auto Boss Toggle
+-- Auto Boss
 Tabs.Main:AddToggle("AutoBossToggle", {
     Title = "Auto Boss",
     Default = false,
@@ -115,7 +115,7 @@ Tabs.Main:AddToggle("AutoBossToggle", {
     end
 })
 
--- 🔘 Auto Check Mana Toggle
+-- Auto Check Mana
 Tabs.Main:AddToggle("AutoCheckManaToggle", {
     Title = "Auto Check Mana",
     Default = false,
@@ -128,8 +128,8 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
     end
 })
 
--- 🔢 Dropdown Chọn Slot (1 đến 8)
-local selectedSlot = 1 -- mặc định
+-- Chọn Slot
+local selectedSlot = 1
 Tabs.Misc:AddDropdown("SlotSelector", {
     Title = "Chọn Slot Trái Ác Quỷ",
     Values = { "1", "2", "3", "4", "5", "6", "7", "8" },
@@ -141,7 +141,7 @@ Tabs.Misc:AddDropdown("SlotSelector", {
     end
 })
 
--- 🔘 Nút Gửi Lệnh SwitchSlot
+-- Gửi lệnh SwitchSlot
 Tabs.Misc:AddButton({
     Title = "Chuyển Đến Slot Đã Chọn",
     Description = "Gửi lệnh SwitchSlot với slot đã chọn",
@@ -158,7 +158,7 @@ Tabs.Misc:AddButton({
     end
 })
 
--- 🔘 Toggle Boost FPS
+-- Boost FPS Toggle
 local boostFPSEnabled = false
 Tabs.Misc:AddToggle("BoostFPSToggle", {
     Title = "Whit Screen",
@@ -168,7 +168,6 @@ Tabs.Misc:AddToggle("BoostFPSToggle", {
         local lighting = game:GetService("Lighting")
         local terrain = workspace.Terrain
         if boostFPSEnabled then
-            -- Giảm chất lượng để tăng FPS
             lighting.GlobalShadows = false
             lighting.FogEnd = 9e9
             lighting.Brightness = 1
@@ -181,7 +180,6 @@ Tabs.Misc:AddToggle("BoostFPSToggle", {
             terrain.WaterTransparency = 0
             game:GetService("RunService"):Set3dRenderingEnabled(false)
         else
-            -- Khôi phục lại mặc định
             lighting.GlobalShadows = true
             lighting.FogEnd = 100000
             lighting.Brightness = 2
@@ -196,7 +194,7 @@ Tabs.Misc:AddToggle("BoostFPSToggle", {
         end
     end
 })
--- 🔘 Nút Boost FPS
+
 Tabs.Misc:AddButton({
     Title = "Boost FPS",
     Description = "Giảm Đồ Họa",
@@ -204,7 +202,7 @@ Tabs.Misc:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/BoostFPS/refs/heads/main/BoostFPS"))()
     end
 })
---Auto Redeem Code
+
 Tabs.Misc:AddButton({
     Title = "Redeem All Code",
     Description = "Redeem All Code",
@@ -212,9 +210,9 @@ Tabs.Misc:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Redeem%20Code"))()
     end
 })
--- 🔘 Chọn Map để Teleport
-local selectedMapId = 9224601490 -- Mặc định Dressrosa
 
+-- Map Teleport
+local selectedMapId = 9224601490
 Tabs.Sever:AddDropdown("MapSelector", {
     Title = "Chọn Map",
     Values = { "Dressrosa", "Wano", "Whole Cake", "Ranked Map" },
@@ -231,17 +229,21 @@ Tabs.Sever:AddDropdown("MapSelector", {
         print("Đã chọn map: " .. value .. " (PlaceId: " .. selectedMapId .. ")")
     end
 })
--- 🔘 Nút Teleport đến Map đã chọn
+
 Tabs.Sever:AddButton({
     Title = "Teleport Đến Map",
     Description = "Dịch chuyển đến map đã chọn",
-local rejoinDelay = 10800 -- mặc định 3 tiếng
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(selectedMapId)
+    end
+})
 
+-- Auto Rejoin Setup
+local rejoinDelay = 10800
 local hourInput = 0
 local minuteInput = 0
 local secondInput = 0
 
--- Nhập giờ
 Tabs.Sever:AddInput("HourInput", {
     Title = "Giờ",
     Default = "0",
@@ -252,7 +254,6 @@ Tabs.Sever:AddInput("HourInput", {
     end
 })
 
--- Nhập phút
 Tabs.Sever:AddInput("MinuteInput", {
     Title = "Phút",
     Default = "0",
@@ -263,7 +264,6 @@ Tabs.Sever:AddInput("MinuteInput", {
     end
 })
 
--- Nhập giây
 Tabs.Sever:AddInput("SecondInput", {
     Title = "Giây",
     Default = "0",
@@ -273,7 +273,7 @@ Tabs.Sever:AddInput("SecondInput", {
         secondInput = tonumber(value) or 0
     end
 })
--- Nút xác nhận và chạy auto rejoin
+
 Tabs.Sever:AddButton({
     Title = "Đặt thời gian và bật Auto Rejoin",
     Description = "Tự động vào lại sau thời gian đặt",
@@ -287,7 +287,6 @@ Tabs.Sever:AddButton({
             Icon = "rbxassetid://138706932256796"
         })
 
-        -- Bắt đầu vòng lặp rejoin
         task.spawn(function()
             while true do
                 task.wait(rejoinDelay)
