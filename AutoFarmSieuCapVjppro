@@ -1,5 +1,5 @@
--- ✅ Kích hoạt chế độ tự động dùng kỹ năng
-_G.auto = true
+-- 📌 Kích hoạt qua biến toàn cục từ UI chính
+shared.autoFarm = shared.autoFarm or false -- Gán mặc định nếu chưa có
 
 -- 📦 Dịch vụ Roblox
 local Players = game:GetService("Players")
@@ -95,22 +95,12 @@ end
 
 -- 💥 Gọi kỹ năng trái
 local function castSkill(fruit, skill)
-    if not fruit or not skill then
-        warn("[castSkill] Thiếu fruit hoặc skill:", fruit, skill)
-        return
-    end
-
-    if not isSkillReady(skill) then
-        -- print("[castSkill] Chiêu đang hồi:", skill)
-        return
-    end
+    if not fruit or not skill then return end
+    if not isSkillReady(skill) then return end
 
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then
-        warn("[castSkill] Không tìm thấy HRP")
-        return
-    end
+    if not hrp then return end
     local target = hrp.Position + hrp.CFrame.LookVector * 50
     local dir = (target - hrp.Position).Unit * 45
     local ray = {
@@ -133,23 +123,21 @@ local function castSkill(fruit, skill)
             MouseRay = ray
         })
     end)
-    if not success then
-        warn("[castSkill] Gọi skill thất bại:", err)
-    end
+    if not success then warn("[castSkill] Lỗi:", err) end
 end
 
--- 🔁 Spam kỹ năng
+-- 🔁 Vòng lặp spam kỹ năng
 local skillLoopRunning = false
 local function startSkillLoop()
     if skillLoopRunning then return end
     skillLoopRunning = true
     task.spawn(function()
         while true do
-            if _G.auto and _isInGame and characterReady and currentFruit and skills[currentFruit] then
+            if shared.autoFarm and _isInGame and characterReady and currentFruit and skills[currentFruit] then
                 for _, skill in ipairs(skills[currentFruit]) do
-                    if not (_isInGame and characterReady) then break end
+                    if not (shared.autoFarm and _isInGame and characterReady) then break end
                     castSkill(currentFruit, skill)
-                    task.wait(0.15) -- Thời gian nhỏ hơn để phản hồi nhanh hơn
+                    task.wait(0.15)
                 end
             else
                 task.wait(0.5)
