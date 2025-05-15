@@ -18,7 +18,7 @@ game.StarterGui:SetCore("SendNotification", {
     Title = "KimSoi Hub",
     Text = "Đã Tải Xong",
     Duration = 10,
-    Icon = "rbxassetid://138706932256796"
+    Icon = "rbxassetid://73570005288839"
 })
 
 task.wait(1.5)
