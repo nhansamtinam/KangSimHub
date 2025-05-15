@@ -212,3 +212,87 @@ Tabs.Misc:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Redeem%20Code"))()
     end
 })
+-- 🔘 Chọn Map để Teleport
+local selectedMapId = 9224601490 -- Mặc định Dressrosa
+
+Tabs.Sever:AddDropdown("MapSelector", {
+    Title = "Chọn Map",
+    Values = { "Dressrosa", "Wano", "Whole Cake", "Ranked Map" },
+    Multi = false,
+    Default = "Dressrosa",
+    Callback = function(value)
+        local mapIds = {
+            ["Dressrosa"] = 9224601490,
+            ["Wano"] = 12413901502,
+            ["Whole Cake"] = 16190471004,
+            ["Ranked Map"] = 17493355683
+        }
+        selectedMapId = mapIds[value]
+        print("Đã chọn map: " .. value .. " (PlaceId: " .. selectedMapId .. ")")
+    end
+})
+-- 🔘 Nút Teleport đến Map đã chọn
+Tabs.Sever:AddButton({
+    Title = "Teleport Đến Map",
+    Description = "Dịch chuyển đến map đã chọn",
+local rejoinDelay = 10800 -- mặc định 3 tiếng
+
+local hourInput = 0
+local minuteInput = 0
+local secondInput = 0
+
+-- Nhập giờ
+Tabs.Sever:AddInput("HourInput", {
+    Title = "Giờ",
+    Default = "0",
+    Placeholder = "Nhập số giờ",
+    Numeric = true,
+    Callback = function(value)
+        hourInput = tonumber(value) or 0
+    end
+})
+
+-- Nhập phút
+Tabs.Sever:AddInput("MinuteInput", {
+    Title = "Phút",
+    Default = "0",
+    Placeholder = "Nhập số phút",
+    Numeric = true,
+    Callback = function(value)
+        minuteInput = tonumber(value) or 0
+    end
+})
+
+-- Nhập giây
+Tabs.Sever:AddInput("SecondInput", {
+    Title = "Giây",
+    Default = "0",
+    Placeholder = "Nhập số giây",
+    Numeric = true,
+    Callback = function(value)
+        secondInput = tonumber(value) or 0
+    end
+})
+-- Nút xác nhận và chạy auto rejoin
+Tabs.Sever:AddButton({
+    Title = "Đặt thời gian và bật Auto Rejoin",
+    Description = "Tự động vào lại sau thời gian đặt",
+    Callback = function()
+        rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Auto Rejoin",
+            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
+            Duration = 8,
+            Icon = "rbxassetid://138706932256796"
+        })
+
+        -- Bắt đầu vòng lặp rejoin
+        task.spawn(function()
+            while true do
+                task.wait(rejoinDelay)
+                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+            end
+        end)
+    end
+})
