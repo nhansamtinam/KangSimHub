@@ -1,0 +1,183 @@
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+
+getgenv().Key = "caa72c81673275da083638d9"
+local validKeys = {
+    ["caa72c81673275da083638d9"] = true,
+}
+
+local player = game.Players.LocalPlayer
+task.wait(1)
+
+if not validKeys[getgenv().Key] then
+    player:Kick("Key sai?. Bạn đã bị loại.")
+    return
+end
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "KangSimHub",
+    Text = "Loaded thành công!",
+    Duration = 10,
+    Icon = "rbxassetid://138706932256796"
+})
+
+task.wait(1.5)
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "KangSimHub",
+    SubTitle = "By KimSoi And Sang Ngu",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(540, 450),
+    Acrylic = true,
+    Theme = "Default",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+SaveManager:LoadAutoloadConfig()
+
+-- Giao diện toggle nút nhỏ bên góc
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local ImageLabel = Instance.new("ImageLabel")
+local UICorner = Instance.new("UICorner")
+local TextButton = Instance.new("TextButton")
+
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.AnchorPoint = Vector2.new(0.1, 0.1)
+Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame.Position = UDim2.new(0, 20, 0.1, -6)
+Frame.Size = UDim2.new(0, 50, 0, 50)
+Frame.Name = "ToggleIcon"
+
+ImageLabel.Parent = Frame
+ImageLabel.Name = "Icon"
+ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+ImageLabel.Size = UDim2.new(0, 60, 0, 60)
+ImageLabel.BackgroundTransparency = 1
+ImageLabel.Image = "rbxassetid://138706932256796"
+
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = Frame
+
+TextButton.Name = "HotkeyButton"
+TextButton.Parent = Frame
+TextButton.Size = UDim2.new(1, 0, 1, 0)
+TextButton.BackgroundTransparency = 1
+TextButton.Text = ""
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+TextButton.MouseButton1Down:Connect(function()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftControl, false, game)
+end)
+
+-- Tabs
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" }),
+    Misc = Window:AddTab({ Title = "Misc", Icon = "" })
+}
+
+-- AUTO FARM TOGGLE
+local isAutoFarmRunning = false
+local autoFarmConnection
+Tabs.Main:AddToggle("AutoFarmToggle", {
+    Title = "Auto Farm",
+    Default = false,
+    Callback = function(value)
+        isAutoFarmRunning = value
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
+        end
+    end
+})
+
+-- AUTO BOSS TOGGLE
+local isAutoBossRunning = false
+Tabs.Main:AddToggle("AutoBossToggle", {
+    Title = "Auto Boss",
+    Default = false,
+    Callback = function(value)
+        isAutoBossRunning = value
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss"))()
+        end
+    end
+})
+
+-- AUTO CHECK MANA TOGGLE
+local isManaCheckRunning = false
+local manaConnection
+Tabs.Main:AddToggle("AutoCheckMana", {
+    Title = "Auto Check Mana",
+    Default = false,
+    Callback = function(value)
+        isManaCheckRunning = value
+        if value then
+            spawn(function()
+                local Players = game:GetService("Players")
+                local RunService = game:GetService("RunService")
+                local player = Players.LocalPlayer
+                local THRESHOLD = 0.1
+                local currentHumanoid = nil
+                local staminaBar = nil
+                local canAct = false
+                local initialDelay = 30
+
+                local function resetCharacter()
+                    if currentHumanoid then
+                        currentHumanoid.Health = 0
+                    end
+                end
+
+                local function setupCharacter(character)
+                    currentHumanoid = character:WaitForChild("Humanoid")
+                    staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
+                end
+
+                if player.Character then
+                    setupCharacter(player.Character)
+                end
+
+                player.CharacterAdded:Connect(function(char)
+                    setupCharacter(char)
+                end)
+
+                task.wait(initialDelay)
+                canAct = true
+
+                manaConnection = RunService.RenderStepped:Connect(function()
+                    if not isManaCheckRunning then
+                        if manaConnection then manaConnection:Disconnect() end
+                        return
+                    end
+
+                    if currentHumanoid and staminaBar then
+                        local percent = staminaBar.Size.X.Scale
+                        if percent < THRESHOLD and currentHumanoid.Health > 0 and canAct then
+                            resetCharacter()
+                            canAct = false
+                            task.wait(30)
+                            canAct = true
+                        end
+                    end
+                end)
+            end)
+        else
+            if manaConnection then
+                manaConnection:Disconnect()
+                manaConnection = nil
+            end
+        end
+    end
+})
+
+-- Label trong tab Misc
+Tabs.Misc:AddLabel("KangSimHub by KimSoi & Sang Ngu")
