@@ -105,8 +105,10 @@ Tabs.Main:AddToggle("AutoBossToggle", {
     Title = "Auto Boss",
     Default = false,
     Callback = function(value)
+        autoBossEnabled = value
+        shared.autoBoss = value -- Cho phép script AutoBoss đồng bộ với toggle
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss%20For%20Main%20Script"))()
         end
     end
 })
@@ -116,8 +118,10 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
     Title = "Auto Check Mana",
     Default = false,
     Callback = function(value)
+        autoCheckManaEnabled = value
+        shared.autoCheckMana = value -- Cho phép script AutoBoss đồng bộ với toggle
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Check%20Mana"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoCheckManaForMainScript"))()
         end
     end
 })
