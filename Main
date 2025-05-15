@@ -130,3 +130,29 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
 Tabs.Misc:AddButton("Boost FPS", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Boost%20FPS"))()
 end)
+-- Biến lưu slot được chọn, mặc định 1
+local selectedSlot = 1
+
+-- Ô chọn số từ 1 đến 8
+Tabs.Misc:AddDropdown("SlotSelector", {
+    Title = "Chọn số Slot (1-8)",
+    Default = "2",
+    Options = {"1","2","3","4","5","6","7","8"},
+    Callback = function(value)
+        selectedSlot = tonumber(value)
+        print("Slot đã chọn:", selectedSlot)
+    end
+})
+
+-- Nút bấm thực hiện SwitchSlot với slot đã chọn
+Tabs.Misc:AddButton("Switch Slot", function()
+    local args = {
+        "FruitsHandler",
+        "SwitchSlot",
+        {
+            Slot = selectedSlot
+        }
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
+    print("Đã gọi SwitchSlot với Slot:", selectedSlot)
+end)
