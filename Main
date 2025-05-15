@@ -85,13 +85,27 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "Misc", Icon = "" })
 }
 
+-- Biến trạng thái cho Auto Farm và Auto Boss
+local AutoFarmRunning = false
+local AutoBossRunning = false
+
 -- 🔘 Auto Farm Toggle
 Tabs.Main:AddToggle("AutoFarmToggle", {
     Title = "Auto Farm",
     Default = false,
     Callback = function(value)
+        AutoFarmRunning = value
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
+            -- Tải và chạy script AutoFarm, truyền biến AutoFarmRunning để script có thể dừng
+            local farmScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
+            if type(farmScript) == "function" then
+                -- Giả sử script bạn chạy có vòng lặp check biến _G.AutoFarmRunning hoặc getgenv().AutoFarmRunning
+                -- Nếu không, bạn cần sửa script AutoFarm để thêm kiểm tra này.
+                getgenv().AutoFarmRunning = true
+                coroutine.wrap(farmScript)()
+            end
+        else
+            getgenv().AutoFarmRunning = false
         end
     end
 })
@@ -101,8 +115,15 @@ Tabs.Main:AddToggle("AutoBossToggle", {
     Title = "Auto Boss",
     Default = false,
     Callback = function(value)
+        AutoBossRunning = value
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss"))()
+            local bossScript = loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss"))()
+            if type(bossScript) == "function" then
+                getgenv().AutoBossRunning = true
+                coroutine.wrap(bossScript)()
+            end
+        else
+            getgenv().AutoBossRunning = false
         end
     end
 })
