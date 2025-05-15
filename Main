@@ -82,7 +82,8 @@ end)
 -- Tabs
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
-    Misc = Window:AddTab({ Title = "Misc", Icon = "" }) -- Thêm tab Misc
+    Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
+    Sever = Window:AddTab({ Title = "Misc", Icon = "" })
 }
 
 -- 🔘 Auto Farm Toggle
@@ -158,7 +159,7 @@ Tabs.Misc:AddButton({
 -- 🔘 Toggle Boost FPS
 local boostFPSEnabled = false
 Tabs.Misc:AddToggle("BoostFPSToggle", {
-    Title = "Boost FPS",
+    Title = "Whit Screen",
     Default = false,
     Callback = function(value)
         boostFPSEnabled = value
