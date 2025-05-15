@@ -214,7 +214,7 @@ task.spawn(function()
                 GuiService.SelectedObject = playButton
                 task.wait(5)
                 pressEnter()
-                task.delay(1, fastTeleport)
+                task.delay(2, fastTeleport)
             end
             task.wait(5)
         end
