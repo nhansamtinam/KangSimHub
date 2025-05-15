@@ -86,14 +86,14 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }) -- Thêm tab Misc
 }
 
--- 🔘 Auto Farm Toggle (Đã sửa)
+-- 🔘 Auto Farm Toggle
 local autoFarmEnabled = false
 Tabs.Main:AddToggle("AutoFarmToggle", {
     Title = "Auto Farm",
     Default = false,
     Callback = function(value)
         autoFarmEnabled = value
-        shared.autoFarm = value -- Cho phép script AutoFarm đồng bộ với toggle
+        shared.autoFarm = value
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
         end
@@ -106,7 +106,7 @@ Tabs.Main:AddToggle("AutoBossToggle", {
     Default = false,
     Callback = function(value)
         autoBossEnabled = value
-        shared.autoBoss = value -- Cho phép script AutoBoss đồng bộ với toggle
+        shared.autoBoss = value
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss%20For%20Main%20Script"))()
         end
@@ -119,9 +119,39 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
     Default = false,
     Callback = function(value)
         autoCheckManaEnabled = value
-        shared.autoCheckMana = value -- Cho phép script AutoCheckMana đồng bộ với toggle
+        shared.autoCheckMana = value
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoCheckManaForMainScript"))()
         end
+    end
+})
+
+-- 🔢 Dropdown Chọn Slot (1 đến 8)
+local selectedSlot = 2 -- mặc định
+Tabs.Misc:AddDropdown("SlotSelector", {
+    Title = "Chọn Slot Trái Ác Quỷ",
+    Values = { "1", "2", "3", "4", "5", "6", "7", "8" },
+    Multi = false,
+    Default = "2",
+    Callback = function(value)
+        selectedSlot = tonumber(value)
+        print("Đã chọn slot: " .. selectedSlot)
+    end
+})
+
+-- 🔘 Nút Gửi Lệnh SwitchSlot
+Tabs.Misc:AddButton({
+    Title = "Chuyển Đến Slot Đã Chọn",
+    Description = "Gửi lệnh SwitchSlot với slot đã chọn",
+    Callback = function()
+        local args = {
+            "FruitsHandler",
+            "SwitchSlot",
+            {
+                Slot = selectedSlot
+            }
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
+        print("Đã gửi lệnh SwitchSlot đến slot: " .. selectedSlot)
     end
 })
