@@ -1,4 +1,4 @@
---Main
+--Main01
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "caa72c81673275da083638d9"
@@ -86,13 +86,14 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "Misc", Icon = "" })
 }
 
--- 🔘 Auto Farm Toggle
+-- 🔘 Auto Farm Toggle (Đã sửa)
 local autoFarmEnabled = false
 Tabs.Main:AddToggle("AutoFarmToggle", {
     Title = "Auto Farm",
     Default = false,
     Callback = function(value)
         autoFarmEnabled = value
+        shared.autoFarm = value -- Cho phép script AutoFarm đồng bộ với toggle
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
         end
@@ -111,7 +112,7 @@ Tabs.Main:AddToggle("AutoBossToggle", {
 })
 
 -- 🔘 Auto Check Mana Toggle
-Tabs.Main:AddToggle("AutoBossToggle", {
+Tabs.Main:AddToggle("AutoCheckManaToggle", {
     Title = "Auto Check Mana",
     Default = false,
     Callback = function(value)
