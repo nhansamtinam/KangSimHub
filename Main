@@ -235,13 +235,15 @@ Tabs.Sever:AddButton({
     Title = "Teleport Đến Map",
     Description = "Dịch chuyển đến map đã chọn",
     Callback = function()
-        -- Ghi đè LastArea nếu tồn tại
+        getgenv().ManualTeleport = true -- đánh dấu là teleport thủ công
+
+        -- Ghi đè LastArea nếu có thể
         local success, err = pcall(function()
             local player = game.Players.LocalPlayer
             local data = player:WaitForChild("Data", 5)
             if data then
                 local lastArea = data:FindFirstChild("LastArea")
-                if lastArea then
+                if lastArea and typeof(lastArea.Value) == "number" then
                     lastArea.Value = selectedMapId
                     print("Đã ghi đè LastArea thành: " .. tostring(selectedMapId))
                 end
@@ -252,7 +254,7 @@ Tabs.Sever:AddButton({
             warn("Không thể ghi đè LastArea:", err)
         end
 
-        -- Teleport
+        -- Teleport đến map đã chọn
         game:GetService("TeleportService"):Teleport(selectedMapId)
     end
 })
