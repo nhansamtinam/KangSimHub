@@ -196,3 +196,19 @@ Tabs.Misc:AddToggle("BoostFPSToggle", {
         end
     end
 })
+-- 🔘 Nút Boost FPS
+Tabs.Misc:AddButton({
+    Title = "Boost FPS",
+    Description = "Giảm Đồ Họa",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/BoostFPS/refs/heads/main/BoostFPS"))()
+    end
+})
+--Auto Redeem Code
+Tabs.Misc:AddButton({
+    Title = "Redeem All Code",
+    Description = "Redeem All Code",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Redeem%20Code"))()
+    end
+})
