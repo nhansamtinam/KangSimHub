@@ -1,32 +1,56 @@
-shared.autoCheckMana = shared.autoCheckMana or false
-
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
-local Stamina = Character:WaitForChild("Stamina") -- Giả sử Stamina là một giá trị IntValue/NumberValue trong Character
+local RunService = game:GetService("RunService")
 
+local player = Players.LocalPlayer
+local THRESHOLD = 0.8
+local currentHumanoid = nil
+local staminaBar = nil
+local canAct = false  -- Ban đầu không cho phép hành động
+local initialDelay = 30  -- Thời gian delay 30 giây khi bắt đầu script
+
+shared.autoCheckMana = shared.autoCheckMana or false -- Biến bật/tắt toggle
+
+-- 🔁 Hàm reset nhân vật bằng cách set Health = 0
 local function resetCharacter()
-    if LocalPlayer and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-        LocalPlayer.Character.Humanoid.Health = 0
+    if currentHumanoid then
+        currentHumanoid.Health = 0
     end
 end
 
-task.spawn(function()
-    while shared.autoCheckMana do
-        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Stamina") then
-            task.wait(1)
-            continue
-        end
+-- 🔁 Gán lại nhân vật mỗi khi respawn
+local function setupCharacter(character)
+    currentHumanoid = character:WaitForChild("Humanoid")
+    staminaBar = player:WaitForChild("PlayerGui"):WaitForChild("UI"):WaitForChild("HUD"):WaitForChild("Bars"):WaitForChild("Stamina")
+end
 
-        local staminaValue = LocalPlayer.Character.Stamina.Value
-        if staminaValue <= 10 then -- Nếu stamina dưới 10%
-            resetCharacter()
-            print("[AutoCheckMana] Đã reset do stamina thấp.")
-            task.wait(30) -- chờ 30 giây sau khi reset mới kiểm tra tiếp
-        else
-            task.wait(1)
+-- Nếu nhân vật đã tồn tại
+if player.Character then
+    setupCharacter(player.Character)
+end
+
+-- Khi nhân vật mới spawn lại
+player.CharacterAdded:Connect(function(char)
+    setupCharacter(char)
+end)
+
+-- ⏳ Delay 30 giây khi bắt đầu
+task.wait(initialDelay)
+canAct = true
+
+-- 🔄 Theo dõi Stamina và reset khi cần
+RunService.RenderStepped:Connect(function()
+    if shared.autoCheckMana then  -- Chỉ chạy khi toggle bật
+        if currentHumanoid and staminaBar then
+            local percent = staminaBar.Size.X.Scale
+            if percent < THRESHOLD and currentHumanoid.Health > 0 and canAct then
+                -- Nếu Stamina thấp và có thể reset
+                resetCharacter()  -- Gọi hàm reset bằng Health = 0
+                canAct = false  -- Tắt khả năng hành động
+
+                -- Chờ 30 giây trước khi reset lần tiếp theo
+                task.wait(30)
+                canAct = true
+            end
         end
     end
-    print("[AutoCheckMana] Đã tắt Auto Check Mana.")
 end)
