@@ -38,7 +38,7 @@ local Window = Fluent:CreateWindow({
 
 SaveManager:LoadAutoloadConfig()
 
--- Giao diện toggle nút nhỏ bên góc
+-- Toggle Icon
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local ImageLabel = Instance.new("ImageLabel")
@@ -85,34 +85,29 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "Misc", Icon = "" })
 }
 
--- AUTO FARM TOGGLE
-local isAutoFarmRunning = false
-local autoFarmConnection
+-- 🔘 Auto Farm Toggle
 Tabs.Main:AddToggle("AutoFarmToggle", {
     Title = "Auto Farm",
     Default = false,
     Callback = function(value)
-        isAutoFarmRunning = value
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
         end
     end
 })
 
--- AUTO BOSS TOGGLE
-local isAutoBossRunning = false
+-- 🔘 Auto Boss Toggle
 Tabs.Main:AddToggle("AutoBossToggle", {
     Title = "Auto Boss",
     Default = false,
     Callback = function(value)
-        isAutoBossRunning = value
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss"))()
         end
     end
 })
 
--- AUTO CHECK MANA TOGGLE
+-- 🔘 Auto Check Mana Toggle
 local isManaCheckRunning = false
 local manaConnection
 Tabs.Main:AddToggle("AutoCheckMana", {
@@ -179,5 +174,45 @@ Tabs.Main:AddToggle("AutoCheckMana", {
     end
 })
 
--- Label trong tab Misc
+-- 📝 Misc Tab: Info + Slot Fruit Changer
 Tabs.Misc:AddLabel("KangSimHub by KimSoi & Sang Ngu")
+
+-- Dropdown + Button đổi slot fruit
+local selectedSlot = 1
+
+Tabs.Misc:AddDropdown("FruitSlotDropdown", {
+    Title = "Chọn slot fruit",
+    Values = {"1", "2", "3", "4", "5", "6", "7", "8"},
+    Default = "1",
+    Callback = function(value)
+        selectedSlot = tonumber(value)
+    end
+})
+
+Tabs.Misc:AddButton({
+    Title = "Đổi Slot",
+    Description = "Chuyển slot fruit đã chọn",
+    Callback = function()
+        if selectedSlot and selectedSlot >= 1 and selectedSlot <= 8 then
+            local args = {
+                "FruitsHandler",
+                "SwitchSlot",
+                {
+                    Slot = selectedSlot
+                }
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Đổi Slot",
+                Text = "Đã chuyển sang slot số " .. selectedSlot,
+                Duration = 5
+            })
+        else
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Lỗi",
+                Text = "Slot không hợp lệ",
+                Duration = 5
+            })
+        end
+    end
+})
