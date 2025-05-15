@@ -1,4 +1,4 @@
---Script Main
+Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "caa72c81673275da083638d9"
@@ -237,61 +237,11 @@ Tabs.Sever:AddButton({
         game:GetService("TeleportService"):Teleport(selectedMapId)
     end
 })
-
--- Auto Rejoin Setup
-local rejoinDelay = 10800
-local hourInput = 0
-local minuteInput = 0
-local secondInput = 0
-
-Tabs.Sever:AddInput("HourInput", {
-    Title = "Giờ",
-    Default = "0",
-    Placeholder = "Nhập số giờ",
-    Numeric = true,
-    Callback = function(value)
-        hourInput = tonumber(value) or 0
-    end
-})
-
-Tabs.Sever:AddInput("MinuteInput", {
-    Title = "Phút",
-    Default = "0",
-    Placeholder = "Nhập số phút",
-    Numeric = true,
-    Callback = function(value)
-        minuteInput = tonumber(value) or 0
-    end
-})
-
-Tabs.Sever:AddInput("SecondInput", {
-    Title = "Giây",
-    Default = "0",
-    Placeholder = "Nhập số giây",
-    Numeric = true,
-    Callback = function(value)
-        secondInput = tonumber(value) or 0
-    end
-})
-
+--Auto Rejoin
 Tabs.Sever:AddButton({
-    Title = "Đặt thời gian và bật Auto Rejoin",
-    Description = "Tự động vào lại sau thời gian đặt",
+    Title = "Auto Rejoin",
+    Description = "Nhập Số Giờ Để Tự Vào Lại Game",
     Callback = function()
-        rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
-
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Auto Rejoin",
-            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
-            Duration = 8,
-            Icon = "rbxassetid://138706932256796"
-        })
-
-        task.spawn(function()
-            while true do
-                task.wait(rejoinDelay)
-                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-            end
-        end)
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Rejoin"))()
     end
 })
