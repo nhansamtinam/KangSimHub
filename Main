@@ -1,4 +1,4 @@
---Main01
+--Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "caa72c81673275da083638d9"
@@ -83,7 +83,7 @@ end)
 -- Tabs
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
-    Misc = Window:AddTab({ Title = "Misc", Icon = "" })
+    Misc = Window:AddTab({ Title = "Misc", Icon = "" }) -- Thêm tab Misc
 }
 
 -- 🔘 Auto Farm Toggle (Đã sửa)
@@ -119,9 +119,14 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
     Default = false,
     Callback = function(value)
         autoCheckManaEnabled = value
-        shared.autoCheckMana = value -- Cho phép script AutoBoss đồng bộ với toggle
+        shared.autoCheckMana = value -- Cho phép script AutoCheckMana đồng bộ với toggle
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoCheckManaForMainScript"))()
         end
     end
 })
+
+-- 🚀 Nút Boost FPS trong tab Misc
+Tabs.Misc:AddButton("Boost FPS", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Boost%20FPS"))()
+end)
