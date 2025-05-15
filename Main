@@ -83,7 +83,7 @@ end)
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
-    Sever = Window:AddTab({ Title = "Misc", Icon = "" })
+    Sever = Window:AddTab({ Title = "Sever", Icon = "" })
 }
 
 -- 🔘 Auto Farm Toggle
