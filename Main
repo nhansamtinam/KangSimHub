@@ -1,4 +1,5 @@
-Main
+You said:
+--Script Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "caa72c81673275da083638d9"
@@ -237,75 +238,59 @@ Tabs.Sever:AddButton({
         game:GetService("TeleportService"):Teleport(selectedMapId)
     end
 })
---Auto Rejoin
-local RejoinInputGui = Instance.new("Frame")
-local HourBox, MinuteBox, SecondBox
-local UIListLayout = Instance.new("UIListLayout")
-local UICorner = Instance.new("UICorner")
 
-RejoinInputGui.Name = "RejoinInputGui"
-RejoinInputGui.Size = UDim2.new(0, 220, 0, 40)
-RejoinInputGui.Position = UDim2.new(0, 100, 0.85, 0) -- Bạn có thể chỉnh lại vị trí nếu muốn
-RejoinInputGui.BackgroundColor3 = Color3.fromRGB(230, 230, 230)
-RejoinInputGui.Parent = game:GetService("CoreGui")
-RejoinInputGui.ClipsDescendants = true
-UICorner.Parent = RejoinInputGui
+-- Auto Rejoin Setup
+local rejoinDelay = 10800
+local hourInput = 0
+local minuteInput = 0
+local secondInput = 0
 
-UIListLayout.Parent = RejoinInputGui
-UIListLayout.FillDirection = Enum.FillDirection.Horizontal
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 5)
+Tabs.Sever:AddInput("HourInput", {
+    Title = "Giờ",
+    Default = "0",
+    Placeholder = "Nhập số giờ",
+    Numeric = true,
+    Callback = function(value)
+        hourInput = tonumber(value) or 0
+    end
+})
 
-local function CreateInput(placeholder)
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0, 60, 1, 0)
-    box.PlaceholderText = placeholder
-    box.Text = ""
-    box.TextScaled = true
-    box.Font = Enum.Font.SourceSans
-    box.TextColor3 = Color3.new(0, 0, 0)
-    box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    box.ClearTextOnFocus = true
-    box.Parent = RejoinInputGui
-    return box
-end
+Tabs.Sever:AddInput("MinuteInput", {
+    Title = "Phút",
+    Default = "0",
+    Placeholder = "Nhập số phút",
+    Numeric = true,
+    Callback = function(value)
+        minuteInput = tonumber(value) or 0
+    end
+})
 
-HourBox = CreateInput("Giờ")
-MinuteBox = CreateInput("Phút")
-SecondBox = CreateInput("Giây")
+Tabs.Sever:AddInput("SecondInput", {
+    Title = "Giây",
+    Default = "0",
+    Placeholder = "Nhập số giây",
+    Numeric = true,
+    Callback = function(value)
+        secondInput = tonumber(value) or 0
+    end
+})
 
--- Nút trong Fluent GUI
 Tabs.Sever:AddButton({
-    Title = "Bật Auto Rejoin",
-    Description = "Tự động vào lại sau thời gian nhập",
+    Title = "Đặt thời gian và bật Auto Rejoin",
+    Description = "Tự động vào lại sau thời gian đặt",
     Callback = function()
-        local h = tonumber(HourBox.Text) or 0
-        local m = tonumber(MinuteBox.Text) or 0
-        local s = tonumber(SecondBox.Text) or 0
-        local totalSeconds = h * 3600 + m * 60 + s
-
-        if totalSeconds <= 0 then
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Lỗi",
-                Text = "Vui lòng nhập thời gian hợp lệ!",
-                Duration = 5
-            })
-            return
-        end
-
-        -- Ẩn GUI nhập
-        RejoinInputGui.Visible = false
+        rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
 
         game.StarterGui:SetCore("SendNotification", {
             Title = "Auto Rejoin",
-            Text = "Đã kích hoạt! Sẽ rejoin sau " .. totalSeconds .. " giây",
-            Duration = 10,
+            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
+            Duration = 8,
             Icon = "rbxassetid://138706932256796"
         })
 
         task.spawn(function()
             while true do
-                task.wait(totalSeconds)
+                task.wait(rejoinDelay)
                 game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
             end
         end)
