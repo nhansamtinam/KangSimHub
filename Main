@@ -39,7 +39,7 @@ local Window = Fluent:CreateWindow({
 
 SaveManager:LoadAutoloadConfig()
 
--- Toggle Icon
+-- Toggle Icon (nút tròn trắng giống ảnh)
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local ImageLabel = Instance.new("ImageLabel")
@@ -55,6 +55,8 @@ Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Frame.Position = UDim2.new(0, 20, 0.1, -6)
 Frame.Size = UDim2.new(0, 50, 0, 50)
 Frame.Name = "ToggleIcon"
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = Frame
 
 ImageLabel.Parent = Frame
 ImageLabel.Name = "Icon"
@@ -63,9 +65,6 @@ ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
 ImageLabel.Size = UDim2.new(0, 60, 0, 60)
 ImageLabel.BackgroundTransparency = 1
 ImageLabel.Image = "rbxassetid://138706932256796"
-
-UICorner.CornerRadius = UDim.new(1, 0)
-UICorner.Parent = Frame
 
 TextButton.Name = "HotkeyButton"
 TextButton.Parent = Frame
@@ -153,5 +152,44 @@ Tabs.Misc:AddButton({
         }
         game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
         print("Đã gửi lệnh SwitchSlot đến slot: " .. selectedSlot)
+    end
+})
+
+-- 🔘 Toggle Boost FPS
+local boostFPSEnabled = false
+Tabs.Misc:AddToggle("BoostFPSToggle", {
+    Title = "Boost FPS",
+    Default = false,
+    Callback = function(value)
+        boostFPSEnabled = value
+        local lighting = game:GetService("Lighting")
+        local terrain = workspace.Terrain
+        if boostFPSEnabled then
+            -- Giảm chất lượng để tăng FPS
+            lighting.GlobalShadows = false
+            lighting.FogEnd = 9e9
+            lighting.Brightness = 1
+            lighting.ClockTime = 14
+            lighting.Ambient = Color3.new(0, 0, 0)
+            lighting.OutdoorAmbient = Color3.new(0, 0, 0)
+            terrain.WaterWaveSize = 0
+            terrain.WaterWaveSpeed = 0
+            terrain.WaterReflectance = 0
+            terrain.WaterTransparency = 0
+            game:GetService("RunService"):Set3dRenderingEnabled(false)
+        else
+            -- Khôi phục lại mặc định
+            lighting.GlobalShadows = true
+            lighting.FogEnd = 100000
+            lighting.Brightness = 2
+            lighting.ClockTime = 14
+            lighting.Ambient = Color3.fromRGB(128, 128, 128)
+            lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+            terrain.WaterWaveSize = 1
+            terrain.WaterWaveSpeed = 1
+            terrain.WaterReflectance = 0.5
+            terrain.WaterTransparency = 0.5
+            game:GetService("RunService"):Set3dRenderingEnabled(true)
+        end
     end
 })
