@@ -2,7 +2,7 @@
 local codes = {
     "WOW850", "860KHYPEE", "870OMG!", "LOLX880K!", "IAMLEOPARD",
     "BIGUPDATE20", "ANTICIPATION", "BIGDAY", "MAGNIFICENT890K!!",
-    "OMG9HUNDRED!", "WOWZER910", "HYPEE920K!", "930KINS4NITY"
+    "OMG9HUNDRED!", "WOWZER910", "HYPEE920K!", "930KINS4NITY", "940KHAPPYDAYZ"
 }
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
