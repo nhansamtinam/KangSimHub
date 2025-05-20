@@ -74,6 +74,30 @@ local currentSlot = 1
 local maxSlot = 4
 local autoSpin = true
 
+-- Tạo GUI hiện thông báo trái hiếm
+local function showRareFruitNotification(fruitName)
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "RareFruitNotifier"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = player:WaitForChild("PlayerGui")
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(0.6, 0, 0.1, 0)
+    textLabel.Position = UDim2.new(0.2, 0, 0.4, 0)
+    textLabel.BackgroundTransparency = 0.3
+    textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.FredokaOne
+    textLabel.Text = "🎯 Gặp trái hiếm: " .. fruitName
+    textLabel.Parent = screenGui
+
+    task.delay(5, function()
+        if screenGui then screenGui:Destroy() end
+    end)
+end
+
 local function getEquippedFruit()
     local slot = player:FindFirstChild("MAIN_DATA") and player.MAIN_DATA.Slots[tostring(currentSlot)]
     return slot and slot.Value or nil
@@ -85,7 +109,8 @@ while autoSpin do
     
     if equipped and isRare(equipped) then
         print("🎯 Gặp trái hiếm:", equipped, " | Người dùng:", username)
-        
+        showRareFruitNotification(equipped)
+
         if currentSlot < maxSlot then
             currentSlot += 1
             Replicator:InvokeServer("FruitsHandler", "SwitchSlot", {Slot = currentSlot})
@@ -100,6 +125,6 @@ while autoSpin do
         Replicator:InvokeServer("FruitsHandler", "Spin", {})
         task.wait(2.5)
     end
-    
+
     task.wait(1)
 end
