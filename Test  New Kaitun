@@ -1,0 +1,105 @@
+--// AUTO REDEEM CODE TRƯỚC
+local codes = {
+    "WOW850", "860KHYPEE", "870OMG!", "LOLX880K!", "IAMLEOPARD",
+    "BIGUPDATE20", "ANTICIPATION", "BIGDAY", "MAGNIFICENT890K!!",
+    "OMG9HUNDRED!", "WOWZER910", "HYPEE920K!", "930KINS4NITY"
+}
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Replicator = ReplicatedStorage:WaitForChild("Replicator")
+
+for _, code in ipairs(codes) do
+    local args = {"Codes", "Redeem", {["Code"] = code}}
+    local success, result = pcall(function()
+        return Replicator:InvokeServer(unpack(args))
+    end)
+    if success then
+        print("Đã thử code:", code, "=>", result)
+    else
+        print("Lỗi code:", code)
+    end
+    task.wait(1)
+end
+
+--// AUTO NHẤN NÚT SPIN + ENTER
+local GuiService = game:GetService("GuiService")
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+local spinButton = nil
+
+while not spinButton do
+    local success, result = pcall(function()
+        return gui:WaitForChild("UI"):WaitForChild("MainMenu")
+            :WaitForChild("Buttons"):FindFirstChild("Spin")
+    end)
+    if success and result and result:IsA("GuiButton") and result.Visible then
+        spinButton = result
+    end
+    task.wait(0.2)
+end
+
+spinButton.Selectable = true
+GuiService.SelectedObject = spinButton
+task.wait(0.5)
+
+for i = 1, 3 do
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+    task.wait(0.5)
+end
+
+task.wait(10)
+
+--Auto Spin + Thông Báo
+
+local rareFruits = {
+    "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
+    "Ope", "Okuchi", "Soul", "Lightning", "Gravity"
+}
+
+local function isRare(fruitName)
+    for _, v in ipairs(rareFruits) do
+        if string.lower(v) == string.lower(fruitName) then
+            return true
+        end
+    end
+    return false
+end
+
+local player = game.Players.LocalPlayer
+local username = player.Name
+local currentSlot = 1
+local maxSlot = 4
+local autoSpin = true
+
+local function getEquippedFruit()
+    local slot = player:FindFirstChild("MAIN_DATA") and player.MAIN_DATA.Slots[tostring(currentSlot)]
+    return slot and slot.Value or nil
+end
+
+while autoSpin do
+    local equipped = getEquippedFruit()
+    print("Slot", currentSlot, "cầm:", equipped)
+    
+    if equipped and isRare(equipped) then
+        print("🎯 Gặp trái hiếm:", equipped, " | Người dùng:", username)
+        
+        if currentSlot < maxSlot then
+            currentSlot += 1
+            Replicator:InvokeServer("FruitsHandler", "SwitchSlot", {Slot = currentSlot})
+            task.wait(1.5)
+        else
+            print("✅ Dừng spin, đã dùng hết slot.")
+            autoSpin = false
+            break
+        end
+    else
+        print("🔄 Spin tiếp...")
+        Replicator:InvokeServer("FruitsHandler", "Spin", {})
+        task.wait(2.5)
+    end
+    
+    task.wait(1)
+end
