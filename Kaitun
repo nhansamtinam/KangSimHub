@@ -52,10 +52,11 @@ end
 
 task.wait(10)
 
---// AUTO SPIN TÌM TRÁI HIẾM
+--Auto Spin + Thông Báo
+
 local rareFruits = {
     "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
-    "Ope", "Okuchi", "Soul", "Lightning", "Gravity"
+    "Ope", "Okuchi", "Soul", "Lightning"
 }
 
 local function isRare(fruitName)
@@ -67,9 +68,53 @@ local function isRare(fruitName)
     return false
 end
 
+local player = game.Players.LocalPlayer
+local username = player.Name
 local currentSlot = 1
 local maxSlot = 4
 local autoSpin = true
+
+-- Tạo GUI hiện vĩnh viễn thông tin trái hiếm
+local function showRareFruitNotification(fruitName)
+    -- Kiểm tra nếu GUI đã tồn tại
+    local gui = player:WaitForChild("PlayerGui"):FindFirstChild("RareFruitNotifier")
+    if not gui then
+        gui = Instance.new("ScreenGui")
+        gui.Name = "RareFruitNotifier"
+        gui.ResetOnSpawn = false
+        gui.IgnoreGuiInset = true
+        gui.Parent = player:WaitForChild("PlayerGui")
+
+        local scroll = Instance.new("ScrollingFrame")
+        scroll.Name = "Scroll"
+        scroll.Size = UDim2.new(0.6, 0, 0.4, 0)
+        scroll.Position = UDim2.new(0.2, 0, 0.3, 0)
+        scroll.CanvasSize = UDim2.new(0, 0, 5, 0)
+        scroll.ScrollBarThickness = 6
+        scroll.BackgroundTransparency = 0.2
+        scroll.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        scroll.BorderSizePixel = 0
+        scroll.Parent = gui
+    end
+
+    local scroll = gui:FindFirstChild("Scroll")
+    if scroll then
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -10, 0, 30)
+        label.Position = UDim2.new(0, 5, 0, #scroll:GetChildren() * 30)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(255, 255, 0)
+        label.TextStrokeTransparency = 0
+        label.Font = Enum.Font.FredokaOne
+        label.TextScaled = true
+        label.Text = "🎯 " .. username .. " quay ra: " .. fruitName
+        label.Parent = scroll
+
+        -- Cập nhật canvas
+        local total = #scroll:GetChildren() * 30
+        scroll.CanvasSize = UDim2.new(0, 0, 0, total + 10)
+    end
+end
 
 local function getEquippedFruit()
     local slot = player:FindFirstChild("MAIN_DATA") and player.MAIN_DATA.Slots[tostring(currentSlot)]
@@ -79,21 +124,25 @@ end
 while autoSpin do
     local equipped = getEquippedFruit()
     print("Slot", currentSlot, "cầm:", equipped)
+
     if equipped and isRare(equipped) then
-        print("Gặp trái hiếm:", equipped)
+        print("🎯", username, "quay ra trái hiếm:", equipped)
+        showRareFruitNotification(equipped)
+
         if currentSlot < maxSlot then
             currentSlot += 1
             Replicator:InvokeServer("FruitsHandler", "SwitchSlot", {Slot = currentSlot})
             task.wait(1.5)
         else
-            print("Dừng spin, hết slot")
+            print("✅ Dừng spin, đã dùng hết slot.")
             autoSpin = false
             break
         end
     else
-        print("Spin tiếp...")
+        print("🔄 Spin tiếp...")
         Replicator:InvokeServer("FruitsHandler", "Spin", {})
         task.wait(2.5)
     end
+
     task.wait(1)
 end
