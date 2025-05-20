@@ -74,28 +74,46 @@ local currentSlot = 1
 local maxSlot = 4
 local autoSpin = true
 
--- Tạo GUI hiện thông báo trái hiếm
+-- Tạo GUI hiện vĩnh viễn thông tin trái hiếm
 local function showRareFruitNotification(fruitName)
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "RareFruitNotifier"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = player:WaitForChild("PlayerGui")
+    -- Kiểm tra nếu GUI đã tồn tại
+    local gui = player:WaitForChild("PlayerGui"):FindFirstChild("RareFruitNotifier")
+    if not gui then
+        gui = Instance.new("ScreenGui")
+        gui.Name = "RareFruitNotifier"
+        gui.ResetOnSpawn = false
+        gui.IgnoreGuiInset = true
+        gui.Parent = player:WaitForChild("PlayerGui")
 
-    local textLabel = Instance.new("TextLabel")
-    textLabel.Size = UDim2.new(0.6, 0, 0.1, 0)
-    textLabel.Position = UDim2.new(0.2, 0, 0.4, 0)
-    textLabel.BackgroundTransparency = 0.3
-    textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-    textLabel.TextStrokeTransparency = 0
-    textLabel.TextScaled = true
-    textLabel.Font = Enum.Font.FredokaOne
-    textLabel.Text = "🎯 Gặp trái hiếm: " .. fruitName
-    textLabel.Parent = screenGui
+        local scroll = Instance.new("ScrollingFrame")
+        scroll.Name = "Scroll"
+        scroll.Size = UDim2.new(0.6, 0, 0.4, 0)
+        scroll.Position = UDim2.new(0.2, 0, 0.3, 0)
+        scroll.CanvasSize = UDim2.new(0, 0, 5, 0)
+        scroll.ScrollBarThickness = 6
+        scroll.BackgroundTransparency = 0.2
+        scroll.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        scroll.BorderSizePixel = 0
+        scroll.Parent = gui
+    end
 
-    task.delay(5, function()
-        if screenGui then screenGui:Destroy() end
-    end)
+    local scroll = gui:FindFirstChild("Scroll")
+    if scroll then
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -10, 0, 30)
+        label.Position = UDim2.new(0, 5, 0, #scroll:GetChildren() * 30)
+        label.BackgroundTransparency = 1
+        label.TextColor3 = Color3.fromRGB(255, 255, 0)
+        label.TextStrokeTransparency = 0
+        label.Font = Enum.Font.FredokaOne
+        label.TextScaled = true
+        label.Text = "🎯 " .. username .. " quay ra: " .. fruitName
+        label.Parent = scroll
+
+        -- Cập nhật canvas
+        local total = #scroll:GetChildren() * 30
+        scroll.CanvasSize = UDim2.new(0, 0, 0, total + 10)
+    end
 end
 
 local function getEquippedFruit()
@@ -106,9 +124,9 @@ end
 while autoSpin do
     local equipped = getEquippedFruit()
     print("Slot", currentSlot, "cầm:", equipped)
-    
+
     if equipped and isRare(equipped) then
-        print("🎯 Gặp trái hiếm:", equipped, " | Người dùng:", username)
+        print("🎯", username, "quay ra trái hiếm:", equipped)
         showRareFruitNotification(equipped)
 
         if currentSlot < maxSlot then
