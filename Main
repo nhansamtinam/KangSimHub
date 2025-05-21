@@ -266,9 +266,8 @@ Tabs.Sever:AddButton({
     end
 })
 --Auto Rejoin
-local Tabs_Sever = Window:AddTab("Sever")
 -- Thêm nút Auto Rejoin vào tab Sever
-Tabs_Sever:AddButton("Auto Rejoin", function()
+Tabs.Sever:AddButton("Auto Rejoin", function()
     local Popup = Fluent:CreateWindow({
         Title = "Auto Rejoin",
         SubTitle = "Cài đặt thời gian",
