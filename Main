@@ -237,37 +237,34 @@ Tabs.Sever:AddButton({
     Callback = function()
         getgenv().ManualTeleport = true
 
-        local player = game.Players.LocalPlayer
-        local selectedId = selectedMapId
+        local Players = game:GetService("Players")
+        local TeleportService = game:GetService("TeleportService")
+        local player = Players.LocalPlayer
+        local selectedId = selectedMapId -- PlaceId của map đã chọn
 
-        -- Set LastArea chính xác
-        local success, err = pcall(function()
-            local data = player:WaitForChild("Data", 5)
-            if data then
-                local lastArea = data:FindFirstChild("LastArea")
-                if lastArea then
-                    if selectedId == 9224601490 then -- Dressrosa
-                        lastArea.Value = 1
-                        print("✔ Đã set LastArea = 1 (Dressrosa)")
-                    else
-                        lastArea.Value = selectedId
-                        print("✔ Đã set LastArea = " .. tostring(selectedId))
-                    end
-                end
-            end
-        end)
+        -- Đợi đến khi player.Data và LastArea tồn tại
+        repeat wait() until player:FindFirstChild("Data") and player.Data:FindFirstChild("LastArea")
+        local lastArea = player.Data.LastArea
 
-        if not success then
-            warn("Không thể set LastArea:", err)
+        -- In ra giá trị hiện tại của LastArea
+        print("🔹 LastArea hiện tại:", lastArea.Value)
+
+        -- Thiết lập lại LastArea theo map đích
+        if selectedId == 9224601490 then -- Nếu là Dressrosa
+            lastArea.Value = 1
+            print("✅ Đã set LastArea = 1 (Dressrosa)")
+        else
+            lastArea.Value = selectedId
+            print("✅ Đã set LastArea = " .. tostring(selectedId))
         end
 
-        -- Đợi một chút rồi mới teleport để đảm bảo LastArea kịp sync
-        task.delay(3, function()
-            game:GetService("TeleportService"):Teleport(selectedId)
-        end)
+        -- Chờ một chút để đảm bảo LastArea được đồng bộ
+        wait(1.5)
+
+        -- Teleport đến PlaceId tương ứng
+        TeleportService:Teleport(selectedId)
     end
 })
-
 -- Auto Rejoin Setup
 local rejoinDelay = 10800
 local hourInput = 0
