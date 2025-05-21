@@ -265,125 +265,84 @@ Tabs.Sever:AddButton({
         TeleportService:Teleport(selectedId)
     end
 })
--- Auto Rejoin Setup
-local rejoinDelay = 10800
-local hourInput = 0
-local minuteInput = 0
-local secondInput = 0
+-- Auto Rejoin Popup
+local Library = library -- nếu bạn dùng Fluent UI
 
-Tabs.Sever:AddInput("HourInput", {
-    Title = "Giờ",
-    Default = "0",
-    Placeholder = "Nhập số giờ",
-    Numeric = true,
-    Callback = function(value)
-        hourInput = tonumber(value) or 0
-    end
-})
-
-Tabs.Sever:AddInput("MinuteInput", {
-    Title = "Phút",
-    Default = "0",
-    Placeholder = "Nhập số phút",
-    Numeric = true,
-    Callback = function(value)
-        minuteInput = tonumber(value) or 0
-    end
-})
-
-Tabs.Sever:AddInput("SecondInput", {
-    Title = "Giây",
-    Default = "0",
-    Placeholder = "Nhập số giây",
-    Numeric = true,
-    Callback = function(value)
-        secondInput = tonumber(value) or 0
-    end
-})
-
-local confirmSection = nil
+local rejoinPopup = nil
 
 Tabs.Sever:AddButton({
-    Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài (Mặc Định Là: 0 Giây)",
+    Title = "🕒 Nhấn Để Auto Rejoin",
+    Description = "Hiện hộp thoại xác nhận và thiết lập thời gian",
     Callback = function()
-        if confirmSection then
-            confirmSection:Destroy()
+        if rejoinPopup then
+            rejoinPopup:Destroy()
+            rejoinPopup = nil
         end
 
-        -- Tạo section xác nhận
-        confirmSection = Tabs.Sever:AddSection("⚠️ Xác nhận Auto Rejoin")
-
-        confirmSection:AddParagraph({
-            Title = "Bạn có chắc muốn Auto Rejoin?",
-            Content = "Auto Rejoin sẽ kích hoạt vĩnh viễn sau khoảng thời gian đã chọn."
+        rejoinPopup = Library:CreateWindow({
+            Title = "Auto Rejoin",
+            Size = UDim2.fromOffset(350, 260),
+            Position = UDim2.fromScale(0.5, 0.5),
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            AlwaysOnTop = true,
+            Modal = true,
         })
 
-        confirmSection:AddButton({
-            Title = "✅ Yes - Kích Hoạt Auto Rejoin",
-            Callback = function()
-                confirmSection:Destroy()
+        local hourInput, minuteInput, secondInput = 0, 0, 0
 
-                local rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
-
-                game.StarterGui:SetCore("SendNotification", {
-                    Title = "Auto Rejoin",
-                    Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
-                    Duration = 8,
-                    Icon = "rbxassetid://138706932256796"
-                })
-
-                task.spawn(function()
-                    while true do
-                        task.wait(rejoinDelay)
-                        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                    end
-                end)
+        rejoinPopup:AddLabel("Nhập thời gian rejoin:")
+        rejoinPopup:AddInput("Giờ", {
+            Placeholder = "0",
+            Numeric = true,
+            Callback = function(value)
+                hourInput = tonumber(value) or 0
             end
         })
 
-        confirmSection:AddButton({
-            Title = "❌ No - Hủy Bỏ",
-            Callback = function()
-                confirmSection:Destroy()
+        rejoinPopup:AddInput("Phút", {
+            Placeholder = "0",
+            Numeric = true,
+            Callback = function(value)
+                minuteInput = tonumber(value) or 0
             end
         })
-    end
-})
 
-Tabs.Misc:AddButton({
-    Title = "Show Stats",
-    Description = "Hiện Thông Tin Nhân Vật ",
-    Callback = function()
-        local Player = game.Players.LocalPlayer
-local mainData = Player:WaitForChild("MAIN_DATA", 10)
+        rejoinPopup:AddInput("Giây", {
+            Placeholder = "0",
+            Numeric = true,
+            Callback = function(value)
+                secondInput = tonumber(value) or 0
+            end
+        })
 
-if not mainData then
-    warn("MAIN_DATA not found!")
-    return
-end
+        rejoinPopup:AddDivider()
 
--- Tạo GUI nhỏ hiện thông tin lên màn hình
-local screenGui = Instance.new("ScreenGui", game.CoreGui)
-local textLabel = Instance.new("TextLabel", screenGui)
-textLabel.Size = UDim2.new(0, 400, 0, 300)
-textLabel.Position = UDim2.new(0, 100, 0, 100)
-textLabel.TextXAlignment = Enum.TextXAlignment.Left
-textLabel.TextYAlignment = Enum.TextYAlignment.Top
-textLabel.BackgroundTransparency = 0.3
-textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-textLabel.TextColor3 = Color3.new(1, 1, 1)
-textLabel.TextSize = 16
-textLabel.Font = Enum.Font.SourceSans
+        rejoinPopup:AddLabel("Bạn có chắc muốn Auto Rejoin không?")
 
--- Lấy toàn bộ thông tin trong MAIN_DATA
-local info = ""
-for _, v in pairs(mainData:GetChildren()) do
-    pcall(function()
-        info = info .. v.Name .. ": " .. tostring(v.Value) .. "\n"
-    end)
-end
+        rejoinPopup:AddButton("✅ Yes", function()
+            local rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
 
-textLabel.Text = info
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Auto Rejoin",
+                Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
+                Duration = 8,
+                Icon = "rbxassetid://138706932256796"
+            })
+
+            rejoinPopup:Destroy()
+            rejoinPopup = nil
+
+            task.spawn(function()
+                while true do
+                    task.wait(rejoinDelay)
+                    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+                end
+            end)
+        end)
+
+        rejoinPopup:AddButton("❌ No", function()
+            rejoinPopup:Destroy()
+            rejoinPopup = nil
+        end)
     end
 })
