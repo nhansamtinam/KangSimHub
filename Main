@@ -266,85 +266,49 @@ Tabs.Sever:AddButton({
     end
 })
 --Auto Rejoin
-local Popup = nil
-local hourInput, minuteInput, secondInput = 0, 0, 0
+local Tabs.Sever = Window:AddTab("Sever")
+-- Thêm nút Auto Rejoin vào tab Sever
+TabsTabs.Sever:AddButton("Auto Rejoin", function()
+    local Popup = Fluent:CreateWindow({
+        Title = "Auto Rejoin",
+        SubTitle = "Cài đặt thời gian",
+        Size = UDim2.fromOffset(300, 250),
+        Acrylic = true,
+        Theme = "Default",
+        MinimizeKey = nil,
+        Position = UDim2.new(0.5, -150, 0.5, -125),
+    })
 
-Tabs.Sever:AddButton({
-    Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin sau thời gian đã cài (xác nhận trước khi chạy)",
-    Callback = function()
-        if Popup then Popup:Destroy() end
+    local Tab_Popup = Popup:AddTab("Cài đặt")
 
-        Popup = Fluent:CreateWindow({
-            Title = "Auto Rejoin",
-            SubTitle = "Cài đặt thời gian và xác nhận",
-            TabWidth = 120,
-            Size = UDim2.fromOffset(400, 260),
-            Position = UDim2.new(0.5, -200, 0.5, -130),
-            Draggable = true,
-            Closable = true
-        })
+    local HourInput = Tab_Popup:AddTextBox("Giờ", {
+        Placeholder = "Nhập giờ (0-23)",
+        NumbersOnly = true,
+    })
+    local MinuteInput = Tab_Popup:AddTextBox("Phút", {
+        Placeholder = "Nhập phút (0-59)",
+        NumbersOnly = true,
+    })
+    local SecondInput = Tab_Popup:AddTextBox("Giây", {
+        Placeholder = "Nhập giây (0-59)",
+        NumbersOnly = true,
+    })
 
-        local Tab = Popup:AddTab({ Title = "Xác nhận", Icon = "Clock" })
+    local ConfirmContainer = Tab_Popup:AddContainer()
+    ConfirmContainer:CreateButton("Yes", function()
+        local h = tonumber(HourInput.Value) or 0
+        local m = tonumber(MinuteInput.Value) or 0
+        local s = tonumber(SecondInput.Value) or 0
 
-        Tab:AddInput("Hours", {
-            Title = "Giờ",
-            Default = "0",
-            Numeric = true,
-            Callback = function(val)
-                hourInput = tonumber(val) or 0
-            end
-        })
+        print("Auto Rejoin set to: " .. h .. "h " .. m .. "m " .. s .. "s")
 
-        Tab:AddInput("Minutes", {
-            Title = "Phút",
-            Default = "0",
-            Numeric = true,
-            Callback = function(val)
-                minuteInput = tonumber(val) or 0
-            end
-        })
+        -- TODO: xử lý logic Auto Rejoin với thời gian đã nhập
 
-        Tab:AddInput("Seconds", {
-            Title = "Giây",
-            Default = "0",
-            Numeric = true,
-            Callback = function(val)
-                secondInput = tonumber(val) or 0
-            end
-        })
+        Popup:Close()
+    end)
+    ConfirmContainer:CreateButton("No", function()
+        Popup:Close()
+    end)
 
-        Tab:AddButton({
-            Title = "✅ Đồng ý - Bắt đầu Auto Rejoin",
-            Callback = function()
-                local delay = (hourInput * 3600) + (minuteInput * 60) + secondInput
-                if delay <= 0 then
-                    Fluent:Notify({ Title = "Lỗi", Content = "Thời gian không hợp lệ!", Duration = 5 })
-                    return
-                end
-
-                Fluent:Notify({
-                    Title = "Auto Rejoin",
-                    Content = "Sẽ tự rejoin sau " .. delay .. " giây",
-                    Duration = 6
-                })
-
-                task.spawn(function()
-                    while true do
-                        task.wait(delay)
-                        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                    end
-                end)
-
-                Popup:Destroy()
-            end
-        })
-
-        Tab:AddButton({
-            Title = "❌ Hủy",
-            Callback = function()
-                Popup:Destroy()
-            end
-        })
-    end
-})
+    Popup:Show()
+end)
