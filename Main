@@ -303,7 +303,7 @@ Tabs.Sever:AddInput("SecondInput", {
 
 Tabs.Sever:AddButton({
     Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài (Mặc Định Là: 0 Giây)
+    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài (Mặc Định Là: 0 Giây)"
     Callback = function()
         -- Tạo cửa sổ xác nhận với Fluent
         library:Prompt({
