@@ -266,137 +266,85 @@ Tabs.Sever:AddButton({
     end
 })
 --Auto Rejoin
-
+local Popup = nil
 local hourInput, minuteInput, secondInput = 0, 0, 0
+
 Tabs.Sever:AddButton({
     Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin sau thời gian đã chọn (Xác nhận trước khi chạy)",
+    Description = "Rejoin sau thời gian đã cài (xác nhận trước khi chạy)",
     Callback = function()
-        -- Hiển thị xác nhận Yes/No
-        Fluent:Prompt({
-            Title = "Kích hoạt Auto Rejoin?",
-            Content = "Bạn có chắc muốn bật Auto Rejoin?",
-            Actions = {
-                Yes = {
-                    Name = "✅ Có",
-                    Callback = function()
-                        -- Sau khi xác nhận, yêu cầu nhập thời gian
-                        Fluent:Prompt({
-                            Title = "Nhập Thời Gian Rejoin",
-                            Content = "Vui lòng nhập thời gian trước khi rejoin:",
-                            Inputs = {
-                                {
-                                    Placeholder = "Giờ",
-                                    Default = "0",
-                                    Callback = function(val)
-                                        hourInput = tonumber(val) or 0
-                                    end
-                                },
-                                {
-                                    Placeholder = "Phút",
-                                    Default = "0",
-                                    Callback = function(val)
-                                        minuteInput = tonumber(val) or 0
-                                    end
-                                },
-                                {
-                                    Placeholder = "Giây",
-                                    Default = "0",
-                                    Callback = function(val)
-                                        secondInput = tonumber(val) or 0
-                                    end
-                                }
-                            },
-                            Actions = {
-                                OK = {
-                                    Name = "✅ Bắt đầu",
-                                    Callback = function()
-                                        local delay = (hourInput * 3600) + (minuteInput * 60) + secondInput
-                                        Fluent:Notify({
-                                            Title = "Auto Rejoin",
-                                            Content = "Sẽ rejoin sau " .. delay .. " giây",
-                                            Duration = 6
-                                        })
+        if Popup then Popup:Destroy() end
 
-                                        task.spawn(function()
-                                            while true do
-                                                task.wait(delay)
-                                                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                                            end
-                                        end)
-                                    end
-                                }
-                            }
-                        })
-                    end
-                },
-                No = {
-                    Name = "❌ Không",
-                    Callback = function()
-                        Fluent:Notify({
-                            Title = "Đã hủy",
-                            Content = "Auto Rejoin không được kích hoạt.",
-                            Duration = 4
-                        })
-                    end
-                }
-            }
-        })
-    end
-})
-
-Tabs.Main:AddButton({
-    Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin sau thời gian đã chọn",
-    Callback = function()
-        Fluent:Prompt({
+        Popup = Fluent:CreateWindow({
             Title = "Auto Rejoin",
-            Content = "Bạn có chắc muốn kích hoạt Auto Rejoin?",
-            Actions = {
-                Yes = {
-                    Name = "Yes",
-                    Callback = function()
-                        -- Tạo UI nhập giờ/phút/giây
-                        Fluent:Prompt({
-                            Title = "Cài Thời Gian",
-                            Content = "Nhập thời gian chờ trước khi rejoin:",
-                            Inputs = {
-                                {
-                                    Placeholder = "Giờ (0-23)",
-                                    Default = "0",
-                                    Callback = function(val) hourInput = tonumber(val) or 0 end
-                                },
-                                {
-                                    Placeholder = "Phút (0-59)",
-                                    Default = "0",
-                                    Callback = function(val) minuteInput = tonumber(val) or 0 end
-                                },
-                                {
-                                    Placeholder = "Giây (0-59)",
-                                    Default = "0",
-                                    Callback = function(val) secondInput = tonumber(val) or 0 end
-                                },
-                            },
-                            Actions = {
-                                OK = {
-                                    Name = "Bắt đầu",
-                                    Callback = startAutoRejoin
-                                }
-                            }
-                        })
+            SubTitle = "Cài đặt thời gian và xác nhận",
+            TabWidth = 120,
+            Size = UDim2.fromOffset(400, 260),
+            Position = UDim2.new(0.5, -200, 0.5, -130),
+            Draggable = true,
+            Closable = true
+        })
+
+        local Tab = Popup:AddTab({ Title = "Xác nhận", Icon = "Clock" })
+
+        Tab:AddInput("Hours", {
+            Title = "Giờ",
+            Default = "0",
+            Numeric = true,
+            Callback = function(val)
+                hourInput = tonumber(val) or 0
+            end
+        })
+
+        Tab:AddInput("Minutes", {
+            Title = "Phút",
+            Default = "0",
+            Numeric = true,
+            Callback = function(val)
+                minuteInput = tonumber(val) or 0
+            end
+        })
+
+        Tab:AddInput("Seconds", {
+            Title = "Giây",
+            Default = "0",
+            Numeric = true,
+            Callback = function(val)
+                secondInput = tonumber(val) or 0
+            end
+        })
+
+        Tab:AddButton({
+            Title = "✅ Đồng ý - Bắt đầu Auto Rejoin",
+            Callback = function()
+                local delay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+                if delay <= 0 then
+                    Fluent:Notify({ Title = "Lỗi", Content = "Thời gian không hợp lệ!", Duration = 5 })
+                    return
+                end
+
+                Fluent:Notify({
+                    Title = "Auto Rejoin",
+                    Content = "Sẽ tự rejoin sau " .. delay .. " giây",
+                    Duration = 6
+                })
+
+                task.spawn(function()
+                    while true do
+                        task.wait(delay)
+                        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
                     end
-                },
-                No = {
-                    Name = "No",
-                    Callback = function()
-                        Fluent:Notify({
-                            Title = "Auto Rejoin",
-                            Content = "Đã huỷ kích hoạt.",
-                            Duration = 4
-                        })
-                    end
-                }
-            }
+                end)
+
+                Popup:Destroy()
+            end
+        })
+
+        Tab:AddButton({
+            Title = "❌ Hủy",
+            Callback = function()
+                Popup:Destroy()
+            end
         })
     end
 })
