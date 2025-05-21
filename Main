@@ -266,6 +266,7 @@ Tabs.Sever:AddButton({
     end
 })
 -- Auto Rejoin Setup
+local rejoinDelay = 0
 local hourInput = 0
 local minuteInput = 0
 local secondInput = 0
