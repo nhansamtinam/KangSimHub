@@ -303,7 +303,7 @@ Tabs.Sever:AddInput("SecondInput", {
 
 Tabs.Sever:AddButton({
     Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Không Cài Sẽ Rejoin Ngay Lập Tức)",
+    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Mặc Định Là: 0 Giây)",
     Callback = function()
         rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
 
