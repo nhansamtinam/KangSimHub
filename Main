@@ -301,43 +301,56 @@ Tabs.Sever:AddInput("SecondInput", {
     end
 })
 
+local confirmSection = nil
+
 Tabs.Sever:AddButton({
     Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài (Mặc Định Là: 0 Giây)"
+    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài (Mặc Định Là: 0 Giây)",
     Callback = function()
-        -- Tạo cửa sổ xác nhận với Fluent
-        library:Prompt({
-            Title = "Xác nhận Auto Rejoin",
-            Content = "Bạn có chắc chắn muốn kích hoạt Auto Rejoin?",
-            Actions = {
-                Accept = {
-                    Name = "Yes",
-                    Callback = function()
-                        local rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+        if confirmSection then
+            confirmSection:Destroy()
+        end
 
-                        game.StarterGui:SetCore("SendNotification", {
-                            Title = "Auto Rejoin",
-                            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
-                            Duration = 8,
-                            Icon = "rbxassetid://138706932256796"
-                        })
+        -- Tạo section xác nhận
+        confirmSection = Tabs.Sever:AddSection("⚠️ Xác nhận Auto Rejoin")
 
-                        task.spawn(function()
-                            while true do
-                                task.wait(rejoinDelay)
-                                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                            end
-                        end)
+        confirmSection:AddParagraph({
+            Title = "Bạn có chắc muốn Auto Rejoin?",
+            Content = "Auto Rejoin sẽ kích hoạt vĩnh viễn sau khoảng thời gian đã chọn."
+        })
+
+        confirmSection:AddButton({
+            Title = "✅ Yes - Kích Hoạt Auto Rejoin",
+            Callback = function()
+                confirmSection:Destroy()
+
+                local rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "Auto Rejoin",
+                    Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
+                    Duration = 8,
+                    Icon = "rbxassetid://138706932256796"
+                })
+
+                task.spawn(function()
+                    while true do
+                        task.wait(rejoinDelay)
+                        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
                     end
-                },
-                Cancel = {
-                    Name = "No"
-                    -- Không cần Callback cho "No", chỉ đóng cửa sổ
-                }
-            }
+                end)
+            end
+        })
+
+        confirmSection:AddButton({
+            Title = "❌ No - Hủy Bỏ",
+            Callback = function()
+                confirmSection:Destroy()
+            end
         })
     end
 })
+
 Tabs.Misc:AddButton({
     Title = "Show Stats",
     Description = "Hiện Thông Tin Nhân Vật ",
