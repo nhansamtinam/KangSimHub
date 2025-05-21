@@ -238,19 +238,20 @@ Tabs.Sever:AddButton({
         getgenv().ManualTeleport = true
 
         local player = game.Players.LocalPlayer
-        local data = player:WaitForChild("Data", 5)
+        local selectedId = selectedMapId
+
+        -- Set LastArea chính xác
         local success, err = pcall(function()
+            local data = player:WaitForChild("Data", 5)
             if data then
                 local lastArea = data:FindFirstChild("LastArea")
                 if lastArea then
-                    -- Nếu teleport về Dressrosa thì ép lastArea = 1
-                    if selectedMapId == 9224601490 then
+                    if selectedId == 9224601490 then -- Dressrosa
                         lastArea.Value = 1
-                        print("Đã set LastArea = 1 (Dressrosa)")
+                        print("✔ Đã set LastArea = 1 (Dressrosa)")
                     else
-                        -- Ngược lại, set LastArea theo id map (nếu cần)
-                        lastArea.Value = selectedMapId
-                        print("Đã set LastArea = " .. tostring(selectedMapId))
+                        lastArea.Value = selectedId
+                        print("✔ Đã set LastArea = " .. tostring(selectedId))
                     end
                 end
             end
@@ -260,8 +261,10 @@ Tabs.Sever:AddButton({
             warn("Không thể set LastArea:", err)
         end
 
-        -- Gọi Teleport
-        game:GetService("TeleportService"):Teleport(selectedMapId)
+        -- Đợi một chút rồi mới teleport để đảm bảo LastArea kịp sync
+        task.delay(3, function()
+            game:GetService("TeleportService"):Teleport(selectedId)
+        end)
     end
 })
 
