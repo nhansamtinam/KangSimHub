@@ -328,7 +328,7 @@ Tabs.Sever:AddButton({
 
 Tabs.Misc:AddButton({
     Title = "Show Stats",
-    Description = "Hiện Thông Tin Nhân ",
+    Description = "Hiện Thông Tin Nhân Vật ",
     Callback = function()
         local Player = game.Players.LocalPlayer
 local mainData = Player:WaitForChild("MAIN_DATA", 10)
