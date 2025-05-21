@@ -305,8 +305,8 @@ Tabs.Sever:AddInput("SecondInput", {
 })
 
 Tabs.Sever:AddButton({
-    Title = "Đặt thời gian và bật Auto Rejoin",
-    Description = "Tự động vào lại sau thời gian đặt",
+    Title = "Nhấn Để Auto Rejoin",
+    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Không Cài Sẽ Rejoin Ngay Lập Tức)",
     Callback = function()
         rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
 
