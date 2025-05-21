@@ -265,84 +265,138 @@ Tabs.Sever:AddButton({
         TeleportService:Teleport(selectedId)
     end
 })
--- Auto Rejoin Popup
-local Library = library -- nếu bạn dùng Fluent UI
+--Auto Rejoin
 
-local rejoinPopup = nil
-
+local hourInput, minuteInput, secondInput = 0, 0, 0
 Tabs.Sever:AddButton({
-    Title = "🕒 Nhấn Để Auto Rejoin",
-    Description = "Hiện hộp thoại xác nhận và thiết lập thời gian",
+    Title = "Nhấn Để Auto Rejoin",
+    Description = "Rejoin sau thời gian đã chọn (Xác nhận trước khi chạy)",
     Callback = function()
-        if rejoinPopup then
-            rejoinPopup:Destroy()
-            rejoinPopup = nil
-        end
+        -- Hiển thị xác nhận Yes/No
+        Fluent:Prompt({
+            Title = "Kích hoạt Auto Rejoin?",
+            Content = "Bạn có chắc muốn bật Auto Rejoin?",
+            Actions = {
+                Yes = {
+                    Name = "✅ Có",
+                    Callback = function()
+                        -- Sau khi xác nhận, yêu cầu nhập thời gian
+                        Fluent:Prompt({
+                            Title = "Nhập Thời Gian Rejoin",
+                            Content = "Vui lòng nhập thời gian trước khi rejoin:",
+                            Inputs = {
+                                {
+                                    Placeholder = "Giờ",
+                                    Default = "0",
+                                    Callback = function(val)
+                                        hourInput = tonumber(val) or 0
+                                    end
+                                },
+                                {
+                                    Placeholder = "Phút",
+                                    Default = "0",
+                                    Callback = function(val)
+                                        minuteInput = tonumber(val) or 0
+                                    end
+                                },
+                                {
+                                    Placeholder = "Giây",
+                                    Default = "0",
+                                    Callback = function(val)
+                                        secondInput = tonumber(val) or 0
+                                    end
+                                }
+                            },
+                            Actions = {
+                                OK = {
+                                    Name = "✅ Bắt đầu",
+                                    Callback = function()
+                                        local delay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+                                        Fluent:Notify({
+                                            Title = "Auto Rejoin",
+                                            Content = "Sẽ rejoin sau " .. delay .. " giây",
+                                            Duration = 6
+                                        })
 
-        rejoinPopup = Library:CreateWindow({
+                                        task.spawn(function()
+                                            while true do
+                                                task.wait(delay)
+                                                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+                                            end
+                                        end)
+                                    end
+                                }
+                            }
+                        })
+                    end
+                },
+                No = {
+                    Name = "❌ Không",
+                    Callback = function()
+                        Fluent:Notify({
+                            Title = "Đã hủy",
+                            Content = "Auto Rejoin không được kích hoạt.",
+                            Duration = 4
+                        })
+                    end
+                }
+            }
+        })
+    end
+})
+
+Tabs.Main:AddButton({
+    Title = "Nhấn Để Auto Rejoin",
+    Description = "Rejoin sau thời gian đã chọn",
+    Callback = function()
+        Fluent:Prompt({
             Title = "Auto Rejoin",
-            Size = UDim2.fromOffset(350, 260),
-            Position = UDim2.fromScale(0.5, 0.5),
-            AnchorPoint = Vector2.new(0.5, 0.5),
-            AlwaysOnTop = true,
-            Modal = true,
+            Content = "Bạn có chắc muốn kích hoạt Auto Rejoin?",
+            Actions = {
+                Yes = {
+                    Name = "Yes",
+                    Callback = function()
+                        -- Tạo UI nhập giờ/phút/giây
+                        Fluent:Prompt({
+                            Title = "Cài Thời Gian",
+                            Content = "Nhập thời gian chờ trước khi rejoin:",
+                            Inputs = {
+                                {
+                                    Placeholder = "Giờ (0-23)",
+                                    Default = "0",
+                                    Callback = function(val) hourInput = tonumber(val) or 0 end
+                                },
+                                {
+                                    Placeholder = "Phút (0-59)",
+                                    Default = "0",
+                                    Callback = function(val) minuteInput = tonumber(val) or 0 end
+                                },
+                                {
+                                    Placeholder = "Giây (0-59)",
+                                    Default = "0",
+                                    Callback = function(val) secondInput = tonumber(val) or 0 end
+                                },
+                            },
+                            Actions = {
+                                OK = {
+                                    Name = "Bắt đầu",
+                                    Callback = startAutoRejoin
+                                }
+                            }
+                        })
+                    end
+                },
+                No = {
+                    Name = "No",
+                    Callback = function()
+                        Fluent:Notify({
+                            Title = "Auto Rejoin",
+                            Content = "Đã huỷ kích hoạt.",
+                            Duration = 4
+                        })
+                    end
+                }
+            }
         })
-
-        local hourInput, minuteInput, secondInput = 0, 0, 0
-
-        rejoinPopup:AddLabel("Nhập thời gian rejoin:")
-        rejoinPopup:AddInput("Giờ", {
-            Placeholder = "0",
-            Numeric = true,
-            Callback = function(value)
-                hourInput = tonumber(value) or 0
-            end
-        })
-
-        rejoinPopup:AddInput("Phút", {
-            Placeholder = "0",
-            Numeric = true,
-            Callback = function(value)
-                minuteInput = tonumber(value) or 0
-            end
-        })
-
-        rejoinPopup:AddInput("Giây", {
-            Placeholder = "0",
-            Numeric = true,
-            Callback = function(value)
-                secondInput = tonumber(value) or 0
-            end
-        })
-
-        rejoinPopup:AddDivider()
-
-        rejoinPopup:AddLabel("Bạn có chắc muốn Auto Rejoin không?")
-
-        rejoinPopup:AddButton("✅ Yes", function()
-            local rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
-
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Auto Rejoin",
-                Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
-                Duration = 8,
-                Icon = "rbxassetid://138706932256796"
-            })
-
-            rejoinPopup:Destroy()
-            rejoinPopup = nil
-
-            task.spawn(function()
-                while true do
-                    task.wait(rejoinDelay)
-                    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                end
-            end)
-        end)
-
-        rejoinPopup:AddButton("❌ No", function()
-            rejoinPopup:Destroy()
-            rejoinPopup = nil
-        end)
     end
 })
