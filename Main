@@ -303,26 +303,41 @@ Tabs.Sever:AddInput("SecondInput", {
 
 Tabs.Sever:AddButton({
     Title = "Nhấn Để Auto Rejoin",
-    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Không Cài Sẽ Rejoin Ngay Lập Tức)",
+    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài (Không Cài Sẽ Rejoin Ngay)",
     Callback = function()
-        rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+        -- Tạo cửa sổ xác nhận với Fluent
+        library:Prompt({
+            Title = "Xác nhận Auto Rejoin",
+            Content = "Bạn có chắc chắn muốn kích hoạt Auto Rejoin?",
+            Actions = {
+                Accept = {
+                    Name = "Yes",
+                    Callback = function()
+                        local rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
 
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Auto Rejoin",
-            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
-            Duration = 8,
-            Icon = "rbxassetid://138706932256796"
+                        game.StarterGui:SetCore("SendNotification", {
+                            Title = "Auto Rejoin",
+                            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
+                            Duration = 8,
+                            Icon = "rbxassetid://138706932256796"
+                        })
+
+                        task.spawn(function()
+                            while true do
+                                task.wait(rejoinDelay)
+                                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+                            end
+                        end)
+                    end
+                },
+                Cancel = {
+                    Name = "No"
+                    -- Không cần Callback cho "No", chỉ đóng cửa sổ
+                }
+            }
         })
-
-        task.spawn(function()
-            while true do
-                task.wait(rejoinDelay)
-                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-            end
-        end)
     end
 })
-
 Tabs.Misc:AddButton({
     Title = "Show Stats",
     Description = "Hiện Thông Tin Nhân Vật ",
