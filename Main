@@ -343,3 +343,40 @@ Tabs.Misc:AddButton({
         end)
     end
 })
+--Show Stats
+Tabs.Misc:AddButton({
+    Title = "Show Stats",
+    Description = "Show Thông Tin Nhân Vật",
+    Callback = function()
+        local Player = game.Players.LocalPlayer
+local mainData = Player:WaitForChild("MAIN_DATA", 10)
+
+if not mainData then
+    warn("MAIN_DATA not found!")
+    return
+end
+
+-- Tạo GUI nhỏ hiện thông tin lên màn hình
+local screenGui = Instance.new("ScreenGui", game.CoreGui)
+local textLabel = Instance.new("TextLabel", screenGui)
+textLabel.Size = UDim2.new(0, 400, 0, 300)
+textLabel.Position = UDim2.new(0, 100, 0, 100)
+textLabel.TextXAlignment = Enum.TextXAlignment.Left
+textLabel.TextYAlignment = Enum.TextYAlignment.Top
+textLabel.BackgroundTransparency = 0.3
+textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.TextSize = 16
+textLabel.Font = Enum.Font.SourceSans
+
+-- Lấy toàn bộ thông tin trong MAIN_DATA
+local info = ""
+for _, v in pairs(mainData:GetChildren()) do
+    pcall(function()
+        info = info .. v.Name .. ": " .. tostring(v.Value) .. "\n"
+    end)
+end
+
+textLabel.Text = info
+    end
+})
