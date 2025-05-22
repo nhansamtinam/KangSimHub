@@ -56,7 +56,7 @@ task.wait(10)
 
 local rareFruits = {
     "DarkXQuake", "DragonV2", "DoughV2", "Nika", "LeopardV2",
-    "Ope", "Okuchi", "Soul", "Lightning", "Gravity"
+    "Ope", "Okuchi", "Soul", "Lightning", "Gravity", "Venom"
 
 }
 
