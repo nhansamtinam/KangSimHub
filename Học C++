@@ -1,0 +1,84 @@
+// Switch Case
+switch(<Số>) {
+    case 0:
+        cout << "0" << endl;
+        break;
+    case 1: case 2: case 3:
+        cout << "1 2 3" << endl;
+        break;
+    default:
+        cout << "default" << endl;
+}
+
+// Vector
+vector<int> v;
+vector<int> v(n); // n là số lượng phần tử
+vector<int> v(n, value); // value sẽ áp dụng cho toàn bộ phần tử
+
+// Cách duyệt Vector
+for (int i = 0; i < vec.size(); i++) { cout << vec[i] << " "; }
+for (int x : vec) { cout << x << " "; }
+for (auto it = vec.begin(); it != vec.end(); ++it) { cout << *it << " "; }
+
+// Chuỗi
+// Để nhập chuỗi có dấu cách thì dùng getline(cin, s); 
+// Nếu ở trước là lệnh cin thì cần dùng cin.ignore() để tránh lỗi do phím enter bị dư
+s.size(); s.length();
+// So sánh chuỗi: a.compare(b); a > b: 1, a < b: -1, a == b: 0
+// Cắt chuỗi: s.substr(m, n); // m là chỉ số bắt đầu, n là số ký tự muốn cắt (tính cả m)
+// Nếu chỉ nhập 1 tham số thì sẽ cắt từ m đến hết chuỗi
+
+// Đổi chữ sang số: stoi(); stoll()
+// Số sang chữ: to_string(n); dùng được cho cả float và int
+
+// Tách chuỗi bằng khoảng trắng:
+string s, tmp;
+stringstream ss(s);
+while (ss >> tmp) { cout << tmp << endl; }
+// Nếu muốn tách theo ký tự khác:
+while (getline(ss, tmp, 'KýTựTách')) { cout << tmp << endl; }
+
+// Pair, Tuple
+pair<int, int> p = make_pair(100, 200); // hoặc pair<int, int> p = {100, 200};
+cout << p.first << " " << p.second << endl;
+tuple<int, int, int> t = {100, 200, 300}; // tuple cũng có thể lưu nhiều hơn 3 giá trị
+cout << get<index>(t) << endl;
+
+// Set
+set<int> s; 
+s.insert(value); 
+s.size();
+s.count(value); // kết quả: == 0 hoặc != 0
+if (s.find(value) != s.end()) { cout << "Found" << endl; }
+s.erase(value); // hoặc xóa theo iterator
+cout << *s.begin() << " " << *s.rbegin() << endl;
+
+// Duyệt Set
+for (int x : s) { cout << x << endl; }
+for (auto x : s) { cout << x << endl; }
+for (set<int>::iterator it = s.begin(); it != s.end(); it++) { cout << *it << endl; }
+
+// multiset, unordered_set cũng tương tự
+
+// Map
+map<int, int> mp;
+mp[key] = value; // key không được trùng nhau
+
+// Duyệt Map
+for (pair<int, int> x : mp) { cout << x.first << " " << x.second << endl; }
+for (map<int, int>::iterator it = mp.begin(); it != mp.end(); it++) {
+    cout << it->first << " " << it->second << endl;
+}
+
+// Tìm kiếm bằng key: dùng count hoặc find
+mp.count(key); // kết quả: == 0 hoặc != 0
+if (mp.find(key) != mp.end()) { cout << "Found" << endl; }
+
+// Đếm số lần xuất hiện của chuỗi
+for (int i = 0; i < n; i++) {
+    string s;
+    cin >> s;
+    mp[s]++;
+}
+
+// Binary search: binary_search(a + x, a + y, key) => tìm trong đoạn a[x] đến a[y - 1]
