@@ -1,6 +1,4 @@
--- Biến chia sẻ trạng thái bật/tắt
 local ShowStatsEnabled = false
--- === Hiển thị MAIN_DATA GUI === --
 local Player = game.Players.LocalPlayer
 local mainData = Player:WaitForChild("MAIN_DATA", 10)
 
@@ -9,17 +7,16 @@ if not mainData then
     return
 end
 
--- GUI
+-- Tạo GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MainDataDisplay"
 screenGui.ResetOnSpawn = false
-screenGui.Enabled = false -- Mặc định tắt, chờ toggle
 screenGui.Parent = game.CoreGui
 
 local textLabel = Instance.new("TextLabel")
-textLabel.Size = UDim2.new(0, 200, 0, 200)
-textLabel.AutomaticSize = Enum.AutomaticSize.Y
-textLabel.Position = UDim2.new(0, 10, 0, 10)
+textLabel.Size = UDim2.new(0, 200, 0, 200) -- Chiều rộng nhỏ lại
+textLabel.AutomaticSize = Enum.AutomaticSize.Y -- Tự mở rộng chiều cao theo nội dung
+textLabel.Position = UDim2.new(0, 10, 0, 10) -- Góc trái trên
 textLabel.TextXAlignment = Enum.TextXAlignment.Left
 textLabel.TextYAlignment = Enum.TextYAlignment.Top
 textLabel.BackgroundTransparency = 0.3
@@ -27,26 +24,41 @@ textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
 textLabel.TextColor3 = Color3.new(1, 1, 1)
 textLabel.TextSize = 14
 textLabel.Font = Enum.Font.SourceSans
-textLabel.TextWrapped = true
+textLabel.TextWrapped = true -- Cho phép tự xuống dòng
 textLabel.Text = ""
 textLabel.Parent = screenGui
--- Cập nhật nội dung
+
+-- Cờ bật/tắt
+local enabled = true
+
+-- Phím tắt bật/tắt GUI (nhấn G)
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+	if not gameProcessed and input.KeyCode == Enum.KeyCode.G then
+		enabled = not enabled
+		screenGui.Enabled = enabled
+	end
+end)
+
+-- Hàm cập nhật GUI
 local function updateData()
-    local info = ""
-    for _, v in pairs(mainData:GetChildren()) do
-        pcall(function()
-            info = info .. v.Name .. ": " .. tostring(v.Value) .. "\n"
-        end)
-    end
-    textLabel.Text = info
+	local info = ""
+	for _, v in pairs(mainData:GetChildren()) do
+		pcall(function()
+			info = info .. v.Name .. ": " .. tostring(v.Value) .. "\n"
+		end)
+	end
+	textLabel.Text = info
 end
+
+-- Cập nhật ban đầu
+updateData()
 
 -- Cập nhật mỗi 10 giây
 task.spawn(function()
-    while true do
-        if ShowStatsEnabled then
-            updateData()
-        end
-        task.wait(10)
-    end
+	while true do
+		if enabled then
+			updateData()
+		end
+		wait(10)
+	end
 end)
