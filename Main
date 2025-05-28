@@ -1,9 +1,9 @@
 --Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
-getgenv().Key = "caa72c81673275da083638d9"
+getgenv().Key = "trongkim19052009"
 local validKeys = {
-    ["caa72c81673275da083638d9"] = true,
+    ["trongkim19052009"] = true,
 }
 
 local player = game.Players.LocalPlayer
