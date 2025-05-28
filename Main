@@ -97,7 +97,7 @@ Tabs.Main:AddToggle("AutoFarmToggle", {
         autoFarmEnabled = value
         shared.autoFarm = value
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoFarmSieuCapVjppro"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Farm"))()
         end
     end
 })
@@ -110,7 +110,7 @@ Tabs.Main:AddToggle("AutoBossToggle", {
         autoBossEnabled = value
         shared.autoBoss = value
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Boss%20For%20Main%20Script"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Boss%20For%20Main%20Script"))()
         end
     end
 })
@@ -123,7 +123,7 @@ Tabs.Main:AddToggle("AutoCheckManaToggle", {
         autoCheckManaEnabled = value
         shared.autoCheckMana = value
         if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/AutoCheckManaForMainScript"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoCheckManaForMainScript"))()
         end
     end
 })
@@ -207,7 +207,7 @@ Tabs.Misc:AddButton({
     Title = "Redeem All Code",
     Description = "Redeem All Code",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Auto%20Redeem%20Code"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Redeem%20Code"))()
     end
 })
 
@@ -327,7 +327,7 @@ Tabs.Fruit:AddButton({
     Title = "Kaitun Auto Spin Fruit",
     Description = "Kích Hoạt Kaitun Auto Spin",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Kaitun"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
     end
 })
 --Anti AFK
