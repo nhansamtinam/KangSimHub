@@ -13,8 +13,7 @@ switch(<Số>) {
 // Vector
 vector<int> v;
 vector<int> v(n); // n là số lượng phần tử
-vector<int> v(n, value); // value sẽ áp dụng cho toàn bộ phần tử
-
+vector<int> v(n, value); // value sẽ áp dụng cho toàn bộ phần t
 // Cách duyệt Vector
 for (int i = 0; i < vec.size(); i++) { cout << vec[i] << " "; }
 for (int x : vec) { cout << x << " "; }
@@ -27,10 +26,8 @@ s.size(); s.length();
 // So sánh chuỗi: a.compare(b); a > b: 1, a < b: -1, a == b: 0
 // Cắt chuỗi: s.substr(m, n); // m là chỉ số bắt đầu, n là số ký tự muốn cắt (tính cả m)
 // Nếu chỉ nhập 1 tham số thì sẽ cắt từ m đến hết chuỗi
-
 // Đổi chữ sang số: stoi(); stoll()
 // Số sang chữ: to_string(n); dùng được cho cả float và int
-
 // Tách chuỗi bằng khoảng trắng:
 string s, tmp;
 stringstream ss(s);
@@ -80,5 +77,11 @@ for (int i = 0; i < n; i++) {
     cin >> s;
     mp[s]++;
 }
-
 // Binary search: binary_search(a + x, a + y, key) => tìm trong đoạn a[x] đến a[y - 1]
+//sort(a,a+n.greater<int>());   //greater dùng để sắp xếp theo giảm dần,thay vì dùng greater ta cũng có thể dùng hàm bool để yêu cầu phức tạp hơn
+ví dụ:
+bool cmp(int a,int b){
+    return(abs(a) < abs(b))   //sắp xếp tăng dần theo gttđ}
+sort(a,a+n,)
+//sort(a.begin() + x,a.begin() + y.greater<int>())   => a[x] => a[y-1]
+//stable_sort(tham số i như sort) => sắp xếp,đối với các số giống nhau thì vẫn giữ được vị trí ban đầu.Ví dụ: sắp xếp theo giá trị tuyệt đối
