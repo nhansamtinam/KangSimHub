@@ -1,0 +1,52 @@
+-- Biến chia sẻ trạng thái bật/tắt
+local ShowStatsEnabled = false
+-- === Hiển thị MAIN_DATA GUI === --
+local Player = game.Players.LocalPlayer
+local mainData = Player:WaitForChild("MAIN_DATA", 10)
+
+if not mainData then
+    warn("MAIN_DATA not found!")
+    return
+end
+
+-- GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MainDataDisplay"
+screenGui.ResetOnSpawn = false
+screenGui.Enabled = false -- Mặc định tắt, chờ toggle
+screenGui.Parent = game.CoreGui
+
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(0, 200, 0, 200)
+textLabel.AutomaticSize = Enum.AutomaticSize.Y
+textLabel.Position = UDim2.new(0, 10, 0, 10)
+textLabel.TextXAlignment = Enum.TextXAlignment.Left
+textLabel.TextYAlignment = Enum.TextYAlignment.Top
+textLabel.BackgroundTransparency = 0.3
+textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.TextSize = 14
+textLabel.Font = Enum.Font.SourceSans
+textLabel.TextWrapped = true
+textLabel.Text = ""
+textLabel.Parent = screenGui
+-- Cập nhật nội dung
+local function updateData()
+    local info = ""
+    for _, v in pairs(mainData:GetChildren()) do
+        pcall(function()
+            info = info .. v.Name .. ": " .. tostring(v.Value) .. "\n"
+        end)
+    end
+    textLabel.Text = info
+end
+
+-- Cập nhật mỗi 10 giây
+task.spawn(function()
+    while true do
+        if ShowStatsEnabled then
+            updateData()
+        end
+        task.wait(10)
+    end
+end)
