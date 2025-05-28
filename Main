@@ -324,8 +324,8 @@ Tabs.Sever:AddButton({
 })
 --Kích Hoạt Auto Spin
 Tabs.Fruit:AddButton({
-    Title = "Auto Spin Fruit",
-    Description = "Auto Spin ",
+    Title = "Kaitun Auto Spin Fruit",
+    Description = "Kích Hoạt Kaitun Auto Spin",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KangSimHub/refs/heads/main/Kaitun"))()
     end
