@@ -2,13 +2,18 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local THRESHOLD = 0.02
+local THRESHOLD = 0.05
+local LOW_STAMINA_LIMIT = 5  -- Số lần cần stamina thấp trước khi reset
+local STAMINA_CHECK_COOLDOWN = 10  -- Thời gian giữa mỗi lần đếm (giây)
+
 local currentHumanoid = nil
 local staminaBar = nil
-local canAct = false  -- Ban đầu không cho phép hành động
-local initialDelay = 30  -- Thời gian delay 30 giây khi bắt đầu script
+local canAct = false
+local initialDelay = 30
+local lowStaminaCount = 0
+local lastLowStaminaTime = 0
 
-shared.autoCheckMana = shared.autoCheckMana or false -- Biến bật/tắt toggle
+shared.autoCheckMana = shared.autoCheckMana or false
 
 -- 🔁 Hàm reset nhân vật bằng cách set Health = 0
 local function resetCharacter()
@@ -39,18 +44,30 @@ canAct = true
 
 -- 🔄 Theo dõi Stamina và reset khi cần
 RunService.RenderStepped:Connect(function()
-    if shared.autoCheckMana then  -- Chỉ chạy khi toggle bật
-        if currentHumanoid and staminaBar then
-            local percent = staminaBar.Size.X.Scale
-            if percent < THRESHOLD and currentHumanoid.Health > 0 and canAct then
-                -- Nếu Stamina thấp và có thể reset
-                resetCharacter()  -- Gọi hàm reset bằng Health = 0
-                canAct = false  -- Tắt khả năng hành động
+    if shared.autoCheckMana and currentHumanoid and staminaBar and canAct then
+        local percent = staminaBar.Size.X.Scale
+        local now = tick()
 
-                -- Chờ 30 giây trước khi reset lần tiếp theo
-                task.wait(30)
+        if percent < THRESHOLD and (now - lastLowStaminaTime >= STAMINA_CHECK_COOLDOWN) then
+            lowStaminaCount += 1
+            lastLowStaminaTime = now
+            print("Stamina thấp lần thứ: " .. lowStaminaCount)
+        elseif percent >= THRESHOLD then
+            -- Nếu stamina phục hồi, có thể cho reset bộ đếm nếu muốn.
+            -- Ở đây ta KHÔNG reset `lowStaminaCount` để giữ số lần đã đếm trước đó.
+            -- Nếu muốn reset khi hồi lại, bỏ comment dòng dưới:
+            -- lowStaminaCount = 0
+        end
+
+        if lowStaminaCount >= LOW_STAMINA_LIMIT and currentHumanoid.Health > 0 then
+            resetCharacter()
+            canAct = false
+            lowStaminaCount = 0
+            lastLowStaminaTime = 0
+
+            task.delay(30, function()
                 canAct = true
-            end
+            end)
         end
     end
 end)
