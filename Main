@@ -85,8 +85,7 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
     Sever = Window:AddTab({ Title = "Sever", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" }),
-    Setting = Window:AddTab({ Title = "Setting", Icon = "" })
+    Player = Window:AddTab({ Title = "Player", Icon = "" })
 }
 
 -- Auto Farm
