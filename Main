@@ -85,7 +85,8 @@ local Tabs = {
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
     Sever = Window:AddTab({ Title = "Sever", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" })
+    Player = Window:AddTab({ Title = "Player", Icon = "" }),
+    Tabs["Setting"] = Window:AddTab({ Title = "Setting", Icon = "" })
 }
 
 -- Auto Farm
@@ -331,18 +332,20 @@ Tabs.Fruit:AddButton({
     end
 })
 --Anti AFK
-Tabs.Misc:AddButton({
-    Title = "Anti AFK",
-    Description = "Anti AFK Cho Client KRNl",
-    Callback = function()
-        local vu = game:GetService("VirtualUser")
-        game:GetService("Players").LocalPlayer.Idled:Connect(function()
-            vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-            task.wait(1)
-            vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        end)
+Tabs.Misc:AddToggle("AntiAFK", {
+    Title = "Anti AFK For Krnl Client",
+    Default = false,
+    Callback = function(value)
+        if value then
+            -- Anti-AFK Script
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    task.wait(1)
+    vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+end)
+        end
     end
-})
 --Show Stats
 Tabs.Misc:AddToggle("ShowStats", {
     Title = "Show Stats",
@@ -352,6 +355,58 @@ Tabs.Misc:AddToggle("ShowStats", {
         shared.ShowStats = value
         if value then
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Show%20Stats"))()
+        end
+    end
+})
+local currentConfig = ""
+local configs = {}
+-- Cập nhật danh sách config
+local function updateConfigs()
+    configs = listfiles(SaveManager.Folder)
+    for i, v in ipairs(configs) do
+        configs[i] = v:match("([^\\/]+)%.json") -- chỉ lấy tên file không đuôi .json
+    end
+end
+updateConfigs()
+
+-- Nhập tên config
+Tabs["Setting"]:AddInput("ConfigNameInput", {
+    Title = "Config Name",
+    Default = "MyConfig",
+    Placeholder = "Nhập tên config...",
+    Callback = function(value)
+        currentConfig = value
+    end
+})
+-- Nút lưu config
+Tabs["Setting"]:AddButton({
+    Title = "💾 Lưu Config",
+    Callback = function()
+        if currentConfig and currentConfig ~= "" then
+            SaveManager:SaveConfig(currentConfig)
+            Fluent:Notify({
+                Title = "Thành công",
+                Content = "Đã lưu config: " .. currentConfig,
+                Duration = 4
+            })
+            updateConfigs()
+        end
+    end
+})
+-- Dropdown chọn config
+Tabs["Setting"]:AddDropdown("ConfigSelect", {
+    Title = "Chọn config để auto load",
+    Values = configs,
+    Multi = false,
+    Default = nil,
+    Callback = function(selected)
+        if selected then
+            SaveManager:SetAutoload(selected)
+            Fluent:Notify({
+                Title = "Tự động tải",
+                Content = "Sẽ auto load config: " .. selected,
+                Duration = 4
+            })
         end
     end
 })
