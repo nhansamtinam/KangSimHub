@@ -1,0 +1,40 @@
+-- Tải và chạy script 1: AutoCheckManaRieng
+local success1, err1 = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoCheckManaRieng"))()
+end)
+
+if not success1 then
+    warn("Lỗi khi chạy script AutoCheckManaRieng: " .. tostring(err1))
+end
+
+-- Đợi một chút trước khi chạy tiếp (nếu cần)
+task.wait(1)
+
+-- Tải và chạy script 2: AutoFarmKaitun
+local success2, err2 = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoFarmKaitun"))()
+end)
+
+if not success2 then
+    warn("Lỗi khi chạy script AutoFarmKaitun: " .. tostring(err2))
+end
+
+task.wait(1)
+
+-- Tải và chạy script 3: AntiAFK
+local success3, err3 = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AntiAFK"))()
+end)
+
+if not success3 then
+    warn("Lỗi khi chạy script AntiAFK: " .. tostring(err3))
+end
+
+-- Tải và chạy script 4: Boost FPS
+local success4, err4 = pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Boost%20FPS"))()
+end)
+
+if not success4 then
+    warn("Lỗi khi chạy script Boost FPS: " .. tostring(err4))
+end
