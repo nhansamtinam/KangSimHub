@@ -86,7 +86,7 @@ local Tabs = {
     Sever = Window:AddTab({ Title = "Sever", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
     Player = Window:AddTab({ Title = "Player", Icon = "" }),
-    Tabs["Setting"] = Window:AddTab({ Title = "Setting", Icon = "" })
+    Setting = Window:AddTab({ Title = "Setting", Icon = "" })
 }
 
 -- Auto Farm
@@ -370,7 +370,7 @@ end
 updateConfigs()
 
 -- Nhập tên config
-Tabs["Setting"]:AddInput("ConfigNameInput", {
+Setting:AddInput("ConfigNameInput", {
     Title = "Config Name",
     Default = "MyConfig",
     Placeholder = "Nhập tên config...",
@@ -379,7 +379,7 @@ Tabs["Setting"]:AddInput("ConfigNameInput", {
     end
 })
 -- Nút lưu config
-Tabs["Setting"]:AddButton({
+Setting:AddButton({
     Title = "💾 Lưu Config",
     Callback = function()
         if currentConfig and currentConfig ~= "" then
@@ -394,7 +394,7 @@ Tabs["Setting"]:AddButton({
     end
 })
 -- Dropdown chọn config
-Tabs["Setting"]:AddDropdown("ConfigSelect", {
+Setting:AddDropdown("ConfigSelect", {
     Title = "Chọn config để auto load",
     Values = configs,
     Multi = false,
