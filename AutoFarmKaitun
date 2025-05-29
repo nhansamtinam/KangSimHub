@@ -1,0 +1,228 @@
+-- 📌 Kích hoạt qua biến toàn cục từ UI chính
+shared.autoFarm = shared.autoFarm or true -- Gán mặc định nếu chưa có
+
+-- 📦 Dịch vụ Roblox
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GuiService = game:GetService("GuiService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+-- 🧍 Người chơi
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+
+-- ⚙️ Biến trạng thái
+local _isInGame = false
+local currentFruit = nil
+local currentHumanoid = nil
+local characterReady = false
+
+-- 💥 Danh sách kỹ năng theo trái ác quỷ
+local skills = {
+    Barrier = {"Barrier", "Bubble", "Crash", "Spikes"},
+    Chop = {"Cannon", "Grab", "Car", "Festival"},
+    Sand = {"DesertSlicer", "Spada", "Swamp", "SablesPesado"},
+    Smoke = {"WhiteBlow", "WhiteOut", "Typhoon", "Firework"},
+    Rubber = {"Pistol", "Bazooka", "Gatling", "Rocket", "Gear2"},
+    Falcon = {"WingSlicer", "FlyingTalon", "WingCyclone", "FalconPunch"},
+    Gas = {"BlueSword", "Suffocation", "CombustiveGas", "RelaxingGas"},
+    Bomb = {"GrenadeBlaster", "Leap", "KickBomb", "HowitzerImpact"},
+    Ice = {"Partisan", "Geyser", "Pheasant", "IceAge", "IceDragon"},
+    Darkness = {"BlackHole", "Liberation", "BlackWorld", "Kurouzu", "DarkHaul", "DarkEnd"},
+    Ash = {"ThousandCrows", "Obelisk", "CrowCascade", "CrowCoffin"},
+    Light = {"LightKick", "MirrorKick", "BlindingCombo", "Guzan", "JewelsOfLight", "Flight"},
+    Flame = {"FireFist", "FireGun", "Pillar", "Beam", "Enkai", "Flight"},
+    Magma = {"MajorEruption", "MeteorVolcano", "Plume", "EruptiveSurge", "HellHound"},
+    Paw = {"PressureCannon", "SonicStomp", "SumoThrustBarrage", "Torture", "UrsusShock"},
+    String = {"Fullbright", "OverheatWhip", "StringKnight", "SixteenBullets", "Skywalk"},
+    Love = {"CupidsArrows", "BouquetOfPain", "Heartthrob", "Heartstrings", "BlossomWind"},
+    Snow = {"SnowAngel", "WinterStorm", "FrostDome", "SnowballCatastrophe", "SnowDrift"},
+    Quake = {"Fist", "Eruption", "Slam", "IslandShake", "SeaQuake"},
+    Gravity = {"Push", "Launch", "Avalanche", "Shoot", "PlanetaryDevastation", "GreatMeteor"},
+    Phoenix = {"Fujiazami", "TalonSlam", "PhoenixInferno", "Bluebird", "Transform", "HawkRush"},
+    Dragon = {"DragonBreath", "DragonClaw", "Screech", "DracoMeteor", "CrimsonBomb", "Transformation", "Tatsumaki"},
+    TSRubber = {"JetPistol", "JetGatling", "RedHawk", "GrizzlyMagnum", "Gear4", "KongGun", "Culverin", "KongGatling", "KingKongGun", "ElasticPropulsion"},
+    Magnet = {"Repel", "MetalArms", "Cyclone", "PunkPrison", "PunkCannon"},
+    IceV2 = {"PiercingGlacier", "BlizzardBlade", "IceHail", "AbsoluteZero", "IceSkate"},
+    MagmaV2 = {"HoundBlaze", "MagmaRain", "MagmaFloor", "Meigo", "CrimsonHowl"},
+    LightV2 = {"PiercingShine", "PhotonStorm", "XFlash", "HeavenlyDescent", "SolarGrenade", "MirrorFlight"},
+    FlameV2 = {"ScorchingFist", "TwistingClaw", "BlazingMeteor", "CrimsonBody", "Supernova"},
+    Venom = {"ChloroFrenzy", "VenomRoad", "ToxicHydra", "PoisonStorm", "HydraCyclone", "Transform", "PoisonGeyser", "ToxicGeyser"},
+    Dough = {"GrilledDough", "DoughMuddle", "LotusDoughCombo", "Chestnut", "Anemone", "Buzzcut"},
+    Leopard = {"AfterimageCombo", "SpiralKick", "ClawBarrage", "PredatorsProwl", "Transform", "Rokuogan", "RisingClawCombo"},
+    DoughV2 = {"GrilledLance", "ElasticLasso", "Oblivion", "PowerDough", "BlazingStorm", "ScorchingBuzzcut"},
+    Ope = {"Room", "Takt", "Wreckage", "HurricaneShock", "GammaKnife", "Mes", "Shambles"},
+    LeopardV2 = {"FingerPistolBarrage", "SonicKick", "InfinityDrive", "UnrelentingAssault", "Transform", "HeavensDemise"},
+    Lightning = {"VoltageUp", "LightningPalm", "CrashingThunder", "ProjectedBurst", "CrushingJudgment", "Raigo"},
+    Nika = {"RocGun", "NeoRedHawk", "RocGatling", "RedRoc", "DrumsOfLiberation", "Gear5", "SpinningTop", "DawnRocket", "MolePistolCombo", "RisingBolt", "GigantStamp", "BajrangGun"},
+    DragonV2 = {"InfernoBreath", "ThunderBagua", "DragonTwister", "BeastsBellow", "Transform", "BoloFrenzy", "FlamingTorch", "Demolition", "Transformation"},
+    Soul = {"EnthralGrasp", "ScorchingSickle", "ZeusMeadow", "CrimsonPillar", "Transform", "MaserCannon"},
+    DarkXQuake = {"AntiQuake", "BlackHolePath", "BlackTurret", "NeoKurouzuCombo", "AntiBody", "QuadraSeaQuake"},
+    Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent", "Transform"},
+}
+
+-- ✅ Kiểm tra cooldown
+local function isSkillReady(skillName)
+    local cdFolder = player:FindFirstChild("Cooldowns")
+    if not cdFolder then return true end
+    local nested = cdFolder:FindFirstChild("Cooldowns")
+    if not nested then return true end
+    local skillCD = nested:FindFirstChild(skillName)
+    if not skillCD then return true end
+    return skillCD.Value <= 0
+end
+
+-- 🧬 Cập nhật trái hiện tại
+local function updateCurrentFruit()
+    local mainData = player:FindFirstChild("MAIN_DATA")
+    if not mainData then warn("Không tìm thấy MAIN_DATA") return end
+    local currentSlot = mainData:FindFirstChild("Slot")
+    if not currentSlot then warn("Không tìm thấy Slot") return end
+    local slotValue = mainData.Slots:FindFirstChild(tostring(currentSlot.Value))
+    currentFruit = slotValue and slotValue.Value or nil
+    print("Cập nhật trái hiện tại:", currentFruit)
+end
+
+-- 👀 Theo dõi thay đổi slot trái
+local function watchSlotChanges()
+    local mainData = player:WaitForChild("MAIN_DATA", 10)
+    if not mainData then return end
+    local slot = mainData:WaitForChild("Slot", 5)
+    if not slot then return end
+    slot:GetPropertyChangedSignal("Value"):Connect(updateCurrentFruit)
+    updateCurrentFruit()
+end
+
+-- 💥 Gọi kỹ năng trái
+local function castSkill(fruit, skill)
+    if not fruit or not skill then return end
+    if not isSkillReady(skill) then return end
+
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local target = hrp.Position + hrp.CFrame.LookVector * 50
+    local dir = (target - hrp.Position).Unit * 45
+    local ray = {
+        Normal = Vector3.yAxis,
+        Direction = dir,
+        Origin = hrp.Position,
+        Instance = workspace.Map:FindFirstChildWhichIsA("BasePart") or workspace.Terrain,
+        Distance = (target - hrp.Position).Magnitude,
+        Material = Enum.Material.Grass,
+        Position = target
+    }
+
+    local success, err = pcall(function()
+        ReplicatedStorage.Replicator:InvokeServer(fruit, skill, {
+            Ground = {Position = target},
+            MouseRay = ray
+        })
+        ReplicatedStorage.ReplicatorNoYield:FireServer("ClientData", "UpdateData", {
+            RootCF = hrp.CFrame,
+            MouseRay = ray
+        })
+    end)
+    if not success then warn("[castSkill] Lỗi:", err) end
+end
+
+-- 🔁 Vòng lặp spam kỹ năng
+local skillLoopRunning = false
+local function startSkillLoop()
+    if skillLoopRunning then return end
+    skillLoopRunning = true
+    task.spawn(function()
+        while true do
+            if shared.autoFarm and _isInGame and characterReady and currentFruit and skills[currentFruit] then
+                for _, skill in ipairs(skills[currentFruit]) do
+                    if not (shared.autoFarm and _isInGame and characterReady) then break end
+                    castSkill(currentFruit, skill)
+                    task.wait(0.15)
+                end
+            else
+                task.wait(0.5)
+            end
+        end
+    end)
+end
+
+-- 🔍 Tìm nút Play
+local function findPlayButton()
+    for _, guiObj in ipairs(gui:GetChildren()) do
+        if guiObj:IsA("ScreenGui") then
+            local btn = guiObj:FindFirstChild("Play", true)
+            if btn and btn:IsA("GuiButton") then
+                return btn
+            end
+        end
+    end
+    return nil
+end
+
+-- ⌨️ Nhấn Enter
+local function pressEnter()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+end
+
+-- 📍 Dịch chuyển
+local function fastTeleport()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp
+    repeat hrp = character:FindFirstChild("HumanoidRootPart") task.wait() until hrp
+    hrp.CFrame = CFrame.new(-1420, 798.93, -85)
+end
+
+-- 🧠 Cài nhân vật
+local function setupCharacter(character)
+    characterReady = false
+    currentHumanoid = character:WaitForChild("Humanoid", 5)
+    local hrp = character:WaitForChild("HumanoidRootPart", 5)
+    if not hrp or not currentHumanoid then return end
+
+    task.spawn(function()
+        local maxWait = 5
+        local elapsed = 0
+        while elapsed < maxWait do
+            updateCurrentFruit()
+            if currentFruit and hrp.Parent == character and hrp:IsDescendantOf(game) then
+                characterReady = true
+                break
+            end
+            elapsed += 0.2
+            task.wait(0.2)
+        end
+    end)
+end
+
+-- 👂 Theo dõi nhân vật mới
+if player.Character then setupCharacter(player.Character) end
+player.CharacterAdded:Connect(function(char)
+    _isInGame = true
+    characterReady = false
+    setupCharacter(char)
+    startSkillLoop()
+end)
+
+-- ▶️ Tự nhấn Play và teleport
+task.spawn(function()
+    while true do
+        while not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) do
+            local playButton = findPlayButton()
+            if playButton then
+                GuiService.SelectedObject = playButton
+                task.wait(5)
+                pressEnter()
+                task.delay(2, fastTeleport)
+            end
+            task.wait(5)
+        end
+        repeat task.wait(0.5) until not (player.Character and player.Character:FindFirstChild("HumanoidRootPart"))
+        _isInGame = false
+        characterReady = false
+    end
+end)
+
+watchSlotChanges()
+startSkillLoop()
