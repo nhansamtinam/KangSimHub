@@ -85,3 +85,4 @@ bool cmp(int a,int b){
 sort(a,a+n,)
 //sort(a.begin() + x,a.begin() + y.greater<int>())   => a[x] => a[y-1]
 //stable_sort(tham số i như sort) => sắp xếp,đối với các số giống nhau thì vẫn giữ được vị trí ban đầu.Ví dụ: sắp xếp theo giá trị tuyệt đối
+// swap(a[i],a[min])
