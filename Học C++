@@ -87,3 +87,4 @@ sort(a,a+n,)
 //stable_sort(tham số i như sort) => sắp xếp,đối với các số giống nhau thì vẫn giữ được vị trí ban đầu.Ví dụ: sắp xếp theo giá trị tuyệt đối
 // swap(a[i],a[min])
 //gcd(b, a % b)
+// ((l + i - 1) / i) * i
