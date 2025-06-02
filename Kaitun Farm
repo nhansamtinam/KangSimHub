@@ -45,5 +45,5 @@ local success5, err5 = pcall(function()
 end)
 
 if not success5 then
-    warn("Lỗi khi chạy script Boost FPS: " .. tostring(err5))
+    warn("Lỗi khi chạy script Auto Boss: " .. tostring(err5))
 end
