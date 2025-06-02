@@ -41,7 +41,7 @@ end
 
 -- Tải và chạy script 5: AutoBoss
 local success5, err5 = pcall(function()
-    https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoBossForKaitun
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoBossForKaitun"))()
 end)
 
 if not success5 then
