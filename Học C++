@@ -88,3 +88,5 @@ sort(a,a+n,)
 // swap(a[i],a[min])
 //gcd(b, a % b)
 // ((l + i - 1) / i) * i
+// k == 0 || k == n => = 1
+// k - 1,n + k-1,n -1
