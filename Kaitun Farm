@@ -38,3 +38,12 @@ end)
 if not success4 then
     warn("Lỗi khi chạy script Boost FPS: " .. tostring(err4))
 end
+
+-- Tải và chạy script 5: AutoBoss
+local success5, err5 = pcall(function()
+    https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoBossForKaitun
+end)
+
+if not success5 then
+    warn("Lỗi khi chạy script Boost FPS: " .. tostring(err5))
+end
