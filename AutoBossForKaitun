@@ -1,0 +1,19 @@
+local Player = game.Players.LocalPlayer
+local mainData = Player:WaitForChild("MAIN_DATA", 10)
+
+if not mainData then
+    warn("MAIN_DATA not found!")
+    return
+end
+
+local bossKills = mainData:FindFirstChild("BossKills")
+
+if bossKills and bossKills.Value < 5 then
+    print("Số boss kill dưới 5, chạy script auto boss.")
+    
+    -- Tải và chạy script Auto Boss
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Boss"))()
+
+else
+    print("Đã tiêu diệt đủ 5 boss hoặc không tìm thấy biến BossKills. Không chạy auto boss.")
+end
