@@ -216,63 +216,51 @@ Tabs.Misc:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Redeem%20Code"))()
     end
 })
-
--- Map Teleport
-local selectedMapId = 9224601490
-
+-- Map ID và LastArea Mapping
+local mapIds = {
+    ["Dressrosa"] = { placeId = 9224601490, lastArea = 1 },
+    ["Wano"] = { placeId = 12413901502, lastArea = 2 },
+    ["Whole Cake"] = { placeId = 16190471004, lastArea = 3 },
+    ["Ranked Map"] = { placeId = 17493355683, lastArea = 4 }
+}
+-- Mặc định map được chọn
+local selectedMapName = "Dressrosa"
 Tabs.Sever:AddDropdown("MapSelector", {
     Title = "Chọn Map",
     Values = { "Dressrosa", "Wano", "Whole Cake", "Ranked Map" },
     Multi = false,
-    Default = "Dressrosa",
+    Default = selectedMapName,
     Callback = function(value)
-        local mapIds = {
-            ["Dressrosa"] = 9224601490,
-            ["Wano"] = 12413901502,
-            ["Whole Cake"] = 16190471004,
-            ["Ranked Map"] = 17493355683
-        }
-        selectedMapId = mapIds[value]
-        local TeleportService = game:GetService("TeleportService")
-        local Players = game:GetService("Players")
-        local placeId = mapIds
-        local player = Players.LocalPlayer
-        TeleportService:Teleport(placeId, player)
+        selectedMapName = value
     end
 })
-
 Tabs.Sever:AddButton({
     Title = "Teleport Đến Map",
     Description = "Dịch chuyển đến map đã chọn",
     Callback = function()
-        getgenv().ManualTeleport = true
-
         local Players = game:GetService("Players")
         local TeleportService = game:GetService("TeleportService")
         local player = Players.LocalPlayer
-        local selectedId = selectedMapId -- PlaceId của map đã chọn
 
-        -- Đợi đến khi player.Data và LastArea tồn tại
+        local selectedData = mapIds[selectedMapName]
+        if not selectedData then
+            warn("❌ Không tìm thấy map: " .. tostring(selectedMapName))
+            return
+        end
+
+        local placeId = selectedData.placeId
+        local lastAreaId = selectedData.lastArea
+
+        -- Đợi Player.Data sẵn sàng
         repeat wait() until player:FindFirstChild("Data") and player.Data:FindFirstChild("LastArea")
         local lastArea = player.Data.LastArea
 
-        -- In ra giá trị hiện tại của LastArea
         print("🔹 LastArea hiện tại:", lastArea.Value)
+        lastArea.Value = lastAreaId
+        print("✅ Đã set LastArea =", lastAreaId)
 
-        -- Thiết lập lại LastArea theo map đích
-        if selectedId == 9224601490 then -- Nếu là Dressrosa
-            lastArea.Value = 1
-            print("✅ Đã set LastArea = 1 (Dressrosa)")
-        else
-            lastArea.Value = selectedId
-            print("✅ Đã set LastArea = " .. tostring(selectedId))
-        end
-
-        -- Chờ một chút để đảm bảo LastArea được đồng bộ
-        wait(1.5)
-
-        -- Teleport đến PlaceId tương ứng
-        TeleportService:Teleport(selectedId)
+        wait(1.5) -- Cho chắc chắn server nhận LastArea
+        TeleportService:Teleport(placeId, player)
     end
 })
 -- Auto Rejoin Setup
