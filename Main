@@ -233,7 +233,11 @@ Tabs.Sever:AddDropdown("MapSelector", {
             ["Ranked Map"] = 17493355683
         }
         selectedMapId = mapIds[value]
-        print("Đã chọn map: " .. value .. " (PlaceId: " .. selectedMapId .. ")")
+        local TeleportService = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+        local placeId = mapIds
+        local player = Players.LocalPlayer
+        TeleportService:Teleport(placeId, player)
     end
 })
 
