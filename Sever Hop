@@ -1,0 +1,43 @@
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+
+local PlaceId = game.PlaceId
+local JobId = game.JobId
+local player = Players.LocalPlayer
+
+local function getServer()
+    local servers = {}
+    local cursor = ""
+
+    while true do
+        local url = "https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100&cursor=" .. cursor
+        local response = game:HttpGet(url)
+        local data = HttpService:JSONDecode(response)
+
+        for _, server in ipairs(data.data) do
+            if server.playing < server.maxPlayers and server.id ~= JobId then
+                table.insert(servers, server.id)
+            end
+        end
+
+        if data.nextPageCursor then
+            cursor = data.nextPageCursor
+        else
+            break
+        end
+    end
+
+    if #servers > 0 then
+        return servers[math.random(1, #servers)]
+    else
+        return nil
+    end
+end
+
+local serverId = getServer()
+if serverId then
+    TeleportService:TeleportToPlaceInstance(PlaceId, serverId, player)
+else
+    warn("Không tìm được server nào phù hợp.")
+end
