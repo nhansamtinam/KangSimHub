@@ -346,6 +346,20 @@ Tabs.Misc:AddToggle("ShowStats", {
 })
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
+-- Viết lại Autoload handlers dùng writefile/readfile
+function SaveManager:SetAutoloadConfig(name)
+    self.AutoloadConfig = name
+    writefile("autoload_config.txt", name)
+end
+
+function SaveManager:GetAutoloadConfig()
+    if isfile("autoload_config.txt") then
+        return readfile("autoload_config.txt")
+    end
+    return nil
+end
+
+-- Input nhập tên config
 Tabs.Setting:AddInput("ConfigNameInput", {
     Title = "Tên Config",
     Default = "",
@@ -412,17 +426,23 @@ Tabs.Setting:AddButton({
     end
 })
 
--- Gọi cập nhật config lúc khởi tạo
+-- Gọi cập nhật danh sách config ban đầu
 updateConfigListDropdown()
--- Tự động load config đã được đánh dấu là autoload (nếu có)
-local autoloadConfig = SaveManager:GetAutoloadConfig()
-if autoloadConfig and autoloadConfig ~= "" then
-    SaveManager:LoadConfig(autoloadConfig)
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Autoload",
-        Text = "Đã tự động load config: " .. autoloadConfig,
-        Duration = 5,
-        Icon = "rbxassetid://138706932256796"
-    })
-end
-Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
+
+-- Tự động load config nếu có (delay để chắc chắn UI & SaveManager đã sẵn sàng)
+task.delay(1, function()
+    local autoloadConfig = SaveManager:GetAutoloadConfig()
+    if autoloadConfig and autoloadConfig ~= "" then
+        SaveManager:LoadConfig(autoloadConfig)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Autoload",
+            Text = "Đã tự động load config: " .. autoloadConfig,
+            Duration = 5,
+            Icon = "rbxassetid://138706932256796"
+        })
+
+        Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. autoloadConfig)
+    else
+        Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: Không có")
+    end
+end)
