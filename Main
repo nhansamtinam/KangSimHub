@@ -417,6 +417,7 @@ Tabs.Setting:AddButton({
             return
         end
         SaveManager:SaveConfig(currentConfigName)
+        SaveManager:SetAutoloadConfig(currentConfigName)
         game.StarterGui:SetCore("SendNotification", {
             Title = "Thành Công",
             Text = "Đã lưu config: " .. currentConfigName,
