@@ -36,7 +36,14 @@ local Window = Fluent:CreateWindow({
     Theme = "Default",
     MinimizeKey = Enum.KeyCode.LeftControl
 })
-
+-- Tabs
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" }),
+    Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
+    Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
+    Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "" })
+}
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
@@ -83,15 +90,6 @@ TextButton.MouseButton1Down:Connect(function()
     task.wait(0.05)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftControl, false, game)
 end)
-
--- Tabs
-local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "" }),
-    Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
-    Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
-    Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" })
-}
 
 -- Auto Farm
 local autoFarmEnabled = false
