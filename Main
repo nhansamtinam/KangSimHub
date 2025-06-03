@@ -216,15 +216,18 @@ Tabs.Misc:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Redeem%20Code"))()
     end
 })
--- Map ID và LastArea Mapping
+-- Danh sách Map và ID tương ứng
 local mapIds = {
-    ["Dressrosa"] = { placeId = 9224601490, lastArea = 1 },
-    ["Wano"] = { placeId = 12413901502, lastArea = 2 },
-    ["Whole Cake"] = { placeId = 16190471004, lastArea = 3 },
-    ["Ranked Map"] = { placeId = 17493355683, lastArea = 4 }
+    ["Dressrosa"] = 9224601490,
+    ["Wano"] = 12413901502,
+    ["Whole Cake"] = 16190471004,
+    ["Ranked Map"] = 17493355683
 }
+
 -- Mặc định map được chọn
 local selectedMapName = "Dressrosa"
+
+-- Dropdown chọn map
 Tabs.Sever:AddDropdown("MapSelector", {
     Title = "Chọn Map",
     Values = { "Dressrosa", "Wano", "Whole Cake", "Ranked Map" },
@@ -234,32 +237,23 @@ Tabs.Sever:AddDropdown("MapSelector", {
         selectedMapName = value
     end
 })
+
+-- Nút Teleport
 Tabs.Sever:AddButton({
     Title = "Teleport Đến Map",
     Description = "Dịch chuyển đến map đã chọn",
     Callback = function()
-        local Players = game:GetService("Players")
         local TeleportService = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
         local player = Players.LocalPlayer
 
-        local selectedData = mapIds[selectedMapName]
-        if not selectedData then
-            warn("❌ Không tìm thấy map: " .. tostring(selectedMapName))
+        local placeId = mapIds[selectedMapName]
+        if not placeId then
+            warn("❌ Không tìm thấy ID cho map: " .. tostring(selectedMapName))
             return
         end
 
-        local placeId = selectedData.placeId
-        local lastAreaId = selectedData.lastArea
-
-        -- Đợi Player.Data sẵn sàng
-        repeat wait() until player:FindFirstChild("Data") and player.Data:FindFirstChild("LastArea")
-        local lastArea = player.Data.LastArea
-
-        print("🔹 LastArea hiện tại:", lastArea.Value)
-        lastArea.Value = lastAreaId
-        print("✅ Đã set LastArea =", lastAreaId)
-
-        wait(1.5) -- Cho chắc chắn server nhận LastArea
+        print("🔹 Đang dịch chuyển đến:", selectedMapName, " (PlaceId:", placeId, ")")
         TeleportService:Teleport(placeId, player)
     end
 })
