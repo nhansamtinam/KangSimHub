@@ -37,6 +37,11 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+SaveManager:BuildConfigSection(Window:AddTab({ Title = "Config", Icon = "" }))
 SaveManager:LoadAutoloadConfig()
 
 -- Toggle Icon
@@ -356,10 +361,8 @@ Tabs.Misc:AddToggle("ShowStats", {
         end
     end
 })
--- Biến lưu tên config hiện tại nhập vào
+-- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
-
--- Input nhập tên config
 Tabs.Setting:AddInput("ConfigNameInput", {
     Title = "Tên Config",
     Default = "",
@@ -367,34 +370,6 @@ Tabs.Setting:AddInput("ConfigNameInput", {
     Numeric = false,
     Callback = function(value)
         currentConfigName = value
-    end
-})
-
--- Nút Lưu Config
-Tabs.Setting:AddButton({
-    Title = "Lưu Config",
-    Description = "Lưu cấu hình hiện tại với tên đã nhập",
-    Callback = function()
-        if currentConfigName == "" then
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Lỗi",
-                Text = "Vui lòng nhập tên config trước khi lưu!",
-                Duration = 5,
-                Icon = "rbxassetid://138706932256796"
-            })
-            return
-        end
-        -- Lưu config bằng SaveManager
-        SaveManager:SaveConfig(currentConfigName)
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Thành Công",
-            Text = "Đã lưu config: " .. currentConfigName,
-            Duration = 5,
-            Icon = "rbxassetid://138706932256796"
-        })
-        
-        -- Cập nhật lại danh sách config trong dropdown
-        updateConfigListDropdown()
     end
 })
 
@@ -417,19 +392,40 @@ local configDropdown = Tabs.Setting:AddDropdown("ConfigSelector", {
     end
 })
 
--- Hàm cập nhật danh sách config có sẵn để cho vào dropdown
-function updateConfigListDropdown()
-    -- Lấy danh sách config hiện có
+-- Hàm cập nhật danh sách config
+local function updateConfigListDropdown()
     local configs = SaveManager:GetConfigs() or {}
-
     if #configs == 0 then
         configs = { "Chưa có config nào" }
     end
-    
-    -- Cập nhật dropdown
     configDropdown:SetValues(configs)
     configDropdown:SetValue(configs[1])
 end
 
--- Khởi động cập nhật danh sách config khi mở tab Setting
+-- Nút lưu config
+Tabs.Setting:AddButton({
+    Title = "Lưu Config",
+    Description = "Lưu cấu hình hiện tại với tên đã nhập",
+    Callback = function()
+        if currentConfigName == "" then
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Lỗi",
+                Text = "Vui lòng nhập tên config trước khi lưu!",
+                Duration = 5,
+                Icon = "rbxassetid://138706932256796"
+            })
+            return
+        end
+        SaveManager:SaveConfig(currentConfigName)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Thành Công",
+            Text = "Đã lưu config: " .. currentConfigName,
+            Duration = 5,
+            Icon = "rbxassetid://138706932256796"
+        })
+        updateConfigListDropdown()
+    end
+})
+
+-- Gọi cập nhật config lúc khởi tạo
 updateConfigListDropdown()
