@@ -344,6 +344,22 @@ Tabs.Misc:AddToggle("ShowStats", {
         end
     end
 })
+--Sever Hop
+Tabs.Sever:AddButton({
+    Title = "Sever Hop",
+    Description = "Join Another Sever",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop"))()
+    end
+})
+--Sever Hop Less Player
+Tabs.Sever:AddButton({
+    Title = "Sever Hop Less Player",
+    Description = "Join Another Sever Less Player",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop%20Less%20Player"))()
+    end
+})
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
 Tabs.Setting:AddInput("ConfigNameInput", {
