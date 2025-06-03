@@ -36,14 +36,7 @@ local Window = Fluent:CreateWindow({
     Theme = "Default",
     MinimizeKey = Enum.KeyCode.LeftControl
 })
--- Tabs
-local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "" }),
-    Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
-    Sever = Window:AddTab({ Title = "Sever", Icon = "" }),
-    Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" })
-}
+
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
@@ -90,7 +83,14 @@ TextButton.MouseButton1Down:Connect(function()
     task.wait(0.05)
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftControl, false, game)
 end)
-
+-- Tabs
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" }),
+    Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
+    Sever = Window:AddTab({ Title = "Sever", Icon = "" }),
+    Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "" })
+}
 -- Auto Farm
 local autoFarmEnabled = false
 Tabs.Main:AddToggle("AutoFarmToggle", {
@@ -440,7 +440,7 @@ if autoloadConfig and autoloadConfig ~= "" then
 end
 Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
 --Auto Find Boss
-Tabs.Misc:AddToggle("Auto Find Boss", {
+Tabs.Main:AddToggle("Auto Find Boss", {
     Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
     Default = false,
     Callback = function(value)
@@ -452,7 +452,7 @@ Tabs.Misc:AddToggle("Auto Find Boss", {
 local selectedNPCName = "Soru Quest"
 
 -- Dropdown Chọn NPC
-Tabs.Misc:AddDropdown("NPCSelector", {
+Tabs.Sever:AddDropdown("NPCSelector", {
     Title = "Chọn NPC",
     Values = { "Soru Book", "Soru Quest" },
     Multi = false,
@@ -463,7 +463,7 @@ Tabs.Misc:AddDropdown("NPCSelector", {
 })
 
 -- Nút Teleport
-Tabs.Misc:AddButton({
+Tabs.Sever:AddButton({
     Title = "Teleport Đến NPC",
     Description = "Dịch chuyển đến NPC đã chọn",
     Callback = function()
