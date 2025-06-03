@@ -41,7 +41,7 @@ InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
-SaveManager:BuildConfigSection(Window:AddTab({ Title = "Config", Icon = "" }))
+SaveManager:BuildConfigSection(Window:AddTab({ Title = "Setting", Icon = "" }))
 SaveManager:LoadAutoloadConfig()
 
 -- Toggle Icon
@@ -88,10 +88,9 @@ end)
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
-    Sever = Window:AddTab({ Title = "Sever", Icon = "" }),
+    Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" }),
-    Setting = Window:AddTab({ Title = "Setting",Icon = "" })
+    Player = Window:AddTab({ Title = "Player", Icon = "" })
 }
 
 -- Auto Farm
@@ -442,3 +441,69 @@ if autoloadConfig and autoloadConfig ~= "" then
     })
 end
 Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
+--Anti AFK
+Tabs.Main:AddToggle("Auto Find Boss", {
+    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Boss"))()
+        end
+    end
+})
+local selectedNPCName = ""
+
+-- Dropdown Chọn NPC
+Tabs.Sever:AddDropdown("NPCSelector", {
+    Title = "Chọn NPC",
+    Values = { "Soru Book", "Soru Quest" },
+    Multi = false,
+    Default = selectedNPCName,
+    Callback = function(value)
+        selectedNPCName = value
+    end
+})
+
+-- Nút Teleport
+Tabs.Sever:AddButton({
+    Title = "Teleport Đến NPC",
+    Description = "Dịch chuyển đến NPC đã chọn",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+
+        if not hrp then
+            warn("Không tìm thấy HumanoidRootPart của người chơi.")
+            return
+        end
+
+        if selectedNPCName == "Soru Quest" then
+            -- Dịch chuyển đến tọa độ cố định của Soru Quest
+            local function fastTeleport()
+                local hrpCheck
+                repeat
+                    hrpCheck = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                    task.wait()
+                until hrpCheck and player.Character.Parent ~= nil
+
+                hrpCheck.CFrame = CFrame.new(-773.96, 835.93, 696.97)
+            end
+            fastTeleport()
+
+        elseif selectedNPCName == "Soru Book" then
+            -- Dịch chuyển đến NPC "Soru Book"
+            local npcFolder = workspace:FindFirstChild("NPCs")
+            local target = npcFolder and npcFolder:FindFirstChild("Soru Book")
+
+            if target and target:FindFirstChild("HumanoidRootPart") then
+                hrp.CFrame = target.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
+            else
+                warn("Không tìm thấy NPC 'Soru Book' hoặc thiếu HumanoidRootPart.")
+            end
+
+        else
+            warn("Chưa chọn NPC hoặc NPC không hợp lệ.")
+        end
+    end
+})
