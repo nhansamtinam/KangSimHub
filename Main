@@ -439,7 +439,7 @@ if autoloadConfig and autoloadConfig ~= "" then
     })
 end
 Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
---Anti AFK
+--Auto Find Boss
 Tabs.Main:AddToggle("Auto Find Boss", {
     Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
     Default = false,
@@ -449,7 +449,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
         end
     end
 })
-local selectedNPCName = ""
+local selectedNPCName = "Soru Quest"
 
 -- Dropdown Chọn NPC
 Tabs.Sever:AddDropdown("NPCSelector", {
