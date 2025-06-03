@@ -452,7 +452,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
 local selectedNPCName = "Soru Quest"
 
 -- Dropdown Chọn NPC
-Tabs.Sever-Teleport:AddDropdown("NPCSelector", {
+Tabs.Sever:AddDropdown("NPCSelector", {
     Title = "Chọn NPC",
     Values = { "Soru Book", "Soru Quest" },
     Multi = false,
