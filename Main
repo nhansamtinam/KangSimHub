@@ -329,16 +329,13 @@ Tabs.Fruit:AddButton({
     end
 })
 --Anti AFK
-Tabs.Misc:AddButton({
+Tabs.Misc:AddToggle("Anti AFK", {
     Title = "Anti AFK",
-    Description = "Anti AFK Cho Client KRNl",
-    Callback = function()
-        local vu = game:GetService("VirtualUser")
-        game:GetService("Players").LocalPlayer.Idled:Connect(function()
-            vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-            task.wait(1)
-            vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        end)
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AntiAFK"))()
+        end
     end
 })
 --Show Stats
