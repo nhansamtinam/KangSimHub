@@ -362,6 +362,14 @@ _G.AutoSpinToggleUI = Tabs.Fruit:AddToggle("AutoSpinToggle", {
         end
     end
 })
+--Kích Hoạt Auto Spin
+Tabs.Fruit:AddButton({
+    Title = "Kaitun Auto Spin Fruit",Add commentMore actions
+    Description = "Kích Hoạt Kaitun Auto Spin",Add commentMore actions
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
+    end
+}
 --Show Stats
 Tabs.Misc:AddToggle("ShowStats", {
     Title = "Show Stats",
