@@ -1,4 +1,4 @@
---Main
+--Main V1
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -40,8 +40,8 @@ local Window = Fluent:CreateWindow({
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
-    Teleport = Window:AddTab({ Title = "Map-Teleport", Icon = "" }),
-    Rejoin = Window:AddTab({ Title = "Sever-Rejoin", Icon =""}),
+    Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
+    Rejoin = Window:AddTab({ Title = "Rejoin", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
     Player = Window:AddTab({ Title = "Player", Icon = "" })
 }
@@ -311,67 +311,6 @@ Tabs.Rejoin:AddButton({
         end)
     end
 })
---Set Up Auto Spin
-local selectedFruitName = ""
--- Dropdown Chọn Fruit
-Tabs.Fruit:AddDropdown("FruitSelector", {
-    Title = "Select Fruit For Stop Auto Spin",
-    Values = {
-    "Barrier",
-    "Chop",
-    "Sand",
-    "Smoke",
-    "Rubber",
-    "Falcon",
-    "Gas",
-    "Bomb",
-    "Ice",
-    "Darkness",
-    "Ash",
-    "Light",
-    "Flame",
-    "Magma",
-    "Paw",
-    "String",
-    "Love",
-    "Snow",
-    "Quake",
-    "Gravity",
-    "Phoenix",
-    "Dragon",
-    "TSRubber",
-    "Magnet",
-    "IceV2",
-    "MagmaV2",
-    "LightV2",
-    "FlameV2",
-    "Venom",
-    "Dough",
-    "Leopard",
-    "DoughV2",
-    "Ope",
-    "LeopardV2",
-    "Lightning",
-    "Nika",
-    "DragonV2",
-    "Soul",
-    "DarkXQuake",
-    "Okuchi"
-},
-    Multi = true,
-    Default = selectedFruitName,
-    Callback = function(value)
-        selectedFruitName = value
-    end
-})
---Kích Hoạt Auto Spin
-Tabs.Fruit:AddButton({
-    Title = "Kaitun Auto Spin Fruit",
-    Description = "Kích Hoạt Kaitun Auto Spin",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
-    end
-})
 --Anti AFK
 Tabs.Misc:AddToggle("Anti AFK", {
     Title = "Anti AFK",
@@ -382,6 +321,7 @@ Tabs.Misc:AddToggle("Anti AFK", {
         end
     end
 })
+
 --Show Stats
 Tabs.Misc:AddToggle("ShowStats", {
     Title = "Show Stats",
@@ -394,36 +334,11 @@ Tabs.Misc:AddToggle("ShowStats", {
         end
     end
 })
---Sever Hop
-Tabs.Rejoin:AddButton({
-    Title = "Sever Hop",
-    Description = "Join Another Sever",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop"))()
-    end
-})
---Sever Hop Less Player
-Tabs.Rejoin:AddButton({
-    Title = "Sever Hop Less Player",
-    Description = "Join Another Sever Less Player",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop%20Less%20Player"))()
-    end
-})
---Auto Find Boss
-Tabs.Main:AddToggle("Auto Find Boss", {
-    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
-    Default = false,
-    Callback = function(value)
-        if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Boss"))()
-        end
-    end
-})
+--Teleport NPC
 local selectedNPCName = "Soru Quest"
 
 -- Dropdown Chọn NPC
-Tabs.Teleport:AddDropdown("NPCSelector", {
+Tabs.Sever:AddDropdown("NPCSelector", {
     Title = "Chọn NPC",
     Values = { "Soru Book", "Soru Quest" },
     Multi = false,
@@ -434,7 +349,7 @@ Tabs.Teleport:AddDropdown("NPCSelector", {
 })
 
 -- Nút Teleport
-Tabs.Teleport:AddButton({
+Tabs.Sever:AddButton({
     Title = "Teleport Đến NPC",
     Description = "Dịch chuyển đến NPC đã chọn",
     Callback = function()
@@ -473,6 +388,42 @@ Tabs.Teleport:AddButton({
 
         else
             warn("Chưa chọn NPC hoặc NPC không hợp lệ.")
+        end
+    end
+})
+--Sever Hop
+Tabs.Sever:AddButton({
+    Title = "Sever Hop",
+    Description = "Join Another Sever",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop"))()
+    end
+})
+--Sever Hop Less Player
+Tabs.Sever:AddButton({
+    Title = "Sever Hop Less Player",
+    Description = "Join Another Sever Less Player",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop%20Less%20Player"))()
+    end
+})
+--Auto Find Boss
+Tabs.Main:AddToggle("Auto Find Boss", {
+    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Boss"))()
+        end
+    end
+})
+--Auto Find Katakuri
+Tabs.Main:AddToggle("Auto Find Boss", {
+    Title = "Auto Find Boss(Katakuri)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Katakuri"))()
         end
     end
 })
