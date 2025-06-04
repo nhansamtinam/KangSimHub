@@ -1,4 +1,4 @@
---Main Updated Auto Spin !
+--Main Updated Auto Spin !!!
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -494,8 +494,8 @@ function startAutoSpin()
             if result and isRare(result) then
                 print("DỪNG! Gặp trái hiếm:", result)
                 _G.autoSpinEnabled = false
-                if autoSpinToggleRef and autoSpinToggleRef.SetState then
-                    autoSpinToggleRef:SetState(false) -- Gạt toggle về OFF
+                if autoSpinToggleRef and autoSpinToggleRef.SetValue then
+                    autoSpinToggleRef:SetValue(false) -- Gạt toggle về OFF
                 end
                 break
             else
