@@ -1,3 +1,4 @@
+-- Dừng nếu có thread cũ
 if _G.AutoSpinThread then
     task.cancel(_G.AutoSpinThread)
     _G.AutoSpinThread = nil
@@ -12,6 +13,7 @@ local function isRare(fruitName)
     return false
 end
 
+-- Vòng lặp Auto Spin
 _G.AutoSpinThread = task.spawn(function()
     while _G.autoSpinToggle do
         local args = {"FruitsHandler", "Spin", {}}
@@ -22,8 +24,8 @@ _G.AutoSpinThread = task.spawn(function()
             print("🎯 Gặp trái cần:", result)
             _G.autoSpinToggle = false
 
-            -- 🧠 Tắt toggle trên giao diện nếu có
-            if _G.AutoSpinToggleUI and _G.AutoSpinToggleUI.Set then
+            -- ✅ Tắt toggle UI nếu có
+            if _G.AutoSpinToggleUI and typeof(_G.AutoSpinToggleUI.Set) == "function" then
                 _G.AutoSpinToggleUI:Set(false)
             end
 
