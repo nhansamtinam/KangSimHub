@@ -428,7 +428,6 @@ Tabs.Main:AddToggle("Auto Find Boss", {
     end
 })
 -- Set Up Auto Spin
--- Biến lưu trạng thái toggle và danh sách trái cần
 _G.autoSpinEnabled = false
 _G.selectedFruitName = {}
 
@@ -445,7 +444,6 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     Multi = true,
     Default = {},
     Callback = function(value)
-        -- Chuyển dạng dữ liệu MultiDropdown thành table dạng mảng
         local selected = {}
         for fruitName, isSelected in pairs(value) do
             if isSelected then
@@ -458,14 +456,17 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
 })
 
 -- Toggle bật/tắt auto spin
-Tabs.Fruit:AddToggle("AutoSpinToggle", {
+local autoSpinToggleRef = nil
+autoSpinToggleRef = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Title = "Auto Spin",
     Default = false,
     Callback = function(state)
-        _G.autoSpinEnabled = state
         if state then
+            -- Bỏ phần hiện bảng xác nhận, bật auto spin luôn
+            _G.autoSpinEnabled = true
             startAutoSpin()
         else
+            _G.autoSpinEnabled = false
             print("Auto Spin đã tắt.")
         end
     end
@@ -493,15 +494,19 @@ function startAutoSpin()
             if result and isRare(result) then
                 print("DỪNG! Gặp trái hiếm:", result)
                 _G.autoSpinEnabled = false
+                if autoSpinToggleRef and autoSpinToggleRef.SetValue then
+                    autoSpinToggleRef:SetValue(false) -- Gạt toggle về OFF
+                end
                 break
             else
                 print("Spin tiếp...")
             end
 
-            task.wait(3.5) -- Delay giữa mỗi lần spin
+            task.wait(3.5)
         end
     end)
 end
+
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
 Tabs.Setting:AddInput("ConfigNameInput", {
