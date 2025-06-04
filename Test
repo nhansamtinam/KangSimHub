@@ -534,12 +534,12 @@ Tabs.Fruit:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
     end
 })
-
+task.wait(10)
 updateConfigListDropdown()
 
 local autoloadConfig = SaveManager:GetAutoloadConfig()
 if autoloadConfig and autoloadConfig ~= "" then
-    task.delay(10, function()
+    task.delay(0, function()
         SaveManager:LoadConfig(autoloadConfig)
         game.StarterGui:SetCore("SendNotification", {
             Title = "Autoload",
