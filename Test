@@ -341,32 +341,7 @@ Tabs.Misc:AddToggle("ShowStats", {
         end
     end
 })
---Sever Hop
-Tabs.Sever:AddButton({
-    Title = "Sever Hop",
-    Description = "Join Another Sever",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop"))()
-    end
-})
---Sever Hop Less Player
-Tabs.Sever:AddButton({
-    Title = "Sever Hop Less Player",
-    Description = "Join Another Sever Less Player",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop%20Less%20Player"))()
-    end
-})
---Auto Find Boss
-Tabs.Main:AddToggle("Auto Find Boss", {
-    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
-    Default = false,
-    Callback = function(value)
-        if value then
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Boss"))()
-        end
-    end
-})
+--Teleport NPC
 local selectedNPCName = "Soru Quest"
 
 -- Dropdown Chọn NPC
@@ -423,6 +398,33 @@ Tabs.Sever:AddButton({
         end
     end
 })
+--Sever Hop
+Tabs.Sever:AddButton({
+    Title = "Sever Hop",
+    Description = "Join Another Sever",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop"))()
+    end
+})
+--Sever Hop Less Player
+Tabs.Sever:AddButton({
+    Title = "Sever Hop Less Player",
+    Description = "Join Another Sever Less Player",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop%20Less%20Player"))()
+    end
+})
+--Auto Find Boss
+Tabs.Main:AddToggle("Auto Find Boss", {
+    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Boss"))()
+        end
+    end
+})
+
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
 Tabs.Setting:AddInput("ConfigNameInput", {
