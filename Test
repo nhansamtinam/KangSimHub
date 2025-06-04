@@ -1,4 +1,4 @@
---Main Updated Auto Spin !!!
+--Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -525,7 +525,14 @@ function startAutoSpin()
         end
     end)
 end
-
+--Kích Hoạt Kaitun Auto Spin
+Tabs.Fruit:AddButton({
+    Title = "Kaitun Auto Spin Fruit",
+    Description = "Kích Hoạt Kaitun Auto Spin",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
+    end
+})
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
 Tabs.Setting:AddInput("ConfigNameInput", {
