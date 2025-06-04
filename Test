@@ -311,59 +311,71 @@ Tabs.Rejoin:AddButton({
         end)
     end
 })
---Set Up Auto Spin
-local selectedFruitName = ""
--- Dropdown Chọn Fruit
-Tabs.Fruit:AddDropdown("FruitSelector", {
+-- Biến toàn cục lưu trạng thái bật/tắt auto spin
+_G.autoSpinToggle = false
+
+-- Biến toàn cục lưu danh sách trái đã chọn từ dropdown
+_G.selectedFruitName = {}
+
+-- Dropdown chọn các trái muốn dừng khi gặp
+FruitTab:AddDropdown("FruitSelector", {
     Title = "Select Fruit For Stop Auto Spin",
     Values = {
-    "Barrier",
-    "Chop",
-    "Sand",
-    "Smoke",
-    "Rubber",
-    "Falcon",
-    "Gas",
-    "Bomb",
-    "Ice",
-    "Darkness",
-    "Ash",
-    "Light",
-    "Flame",
-    "Magma",
-    "Paw",
-    "String",
-    "Love",
-    "Snow",
-    "Quake",
-    "Gravity",
-    "Phoenix",
-    "Dragon",
-    "TSRubber",
-    "Magnet",
-    "IceV2",
-    "MagmaV2",
-    "LightV2",
-    "FlameV2",
-    "Venom",
-    "Dough",
-    "Leopard",
-    "DoughV2",
-    "Ope",
-    "LeopardV2",
-    "Lightning",
-    "Nika",
-    "DragonV2",
-    "Soul",
-    "DarkXQuake",
-    "Okuchi"
-},
+        "Barrier", "Chop", "Sand", "Smoke", "Rubber", "Falcon", "Gas", "Bomb", "Ice", "Darkness",
+        "Ash", "Light", "Flame", "Magma", "Paw", "String", "Love", "Snow", "Quake", "Gravity",
+        "Phoenix", "Dragon", "TSRubber", "Magnet", "IceV2", "MagmaV2", "LightV2", "FlameV2",
+        "Venom", "Dough", "Leopard", "DoughV2", "Ope", "LeopardV2", "Lightning", "Nika", "DragonV2",
+        "Soul", "DarkXQuake", "Okuchi"
+    },
     Multi = true,
-    Default = selectedFruitName,
+    Default = {},
     Callback = function(value)
-        selectedFruitName = value
+        _G.selectedFruitName = value
+        print("Danh sách trái đã chọn:", table.concat(value, ", "))
     end
 })
+
+-- Toggle bật/tắt Auto Spin Fruit
+FruitTab:AddToggle("AutoSpinToggle", {
+    Title = "Auto Spin Fruit",
+    Default = false,
+    Callback = function(state)
+        _G.autoSpinToggle = state
+        print("Auto Spin Fruit:", state and "BẬT" or "TẮT")
+    end
+})
+
+-- Hàm kiểm tra xem kết quả spin có nằm trong danh sách trái đã chọn hay không
+local function isRare(fruitName)
+    for _, v in pairs(_G.selectedFruitName) do
+        if string.lower(v) == string.lower(fruitName) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Luồng xử lý auto spin
+task.spawn(function()
+    while true do
+        if _G.autoSpinToggle then
+            local args = {"FruitsHandler", "Spin", {}}
+            local result = game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
+            print("Kết quả spin trả về:", result)
+
+            if result and isRare(result) then
+                print("🎯 Gặp trái được chọn:", result, " -> DỪNG AUTO SPIN!")
+                _G.autoSpinToggle = false
+            else
+                print("Không trúng trái cần, tiếp tục spin...")
+            end
+
+            task.wait(3.5) -- delay giữa các lần spin
+        else
+            task.wait(1)
+        end
+    end
+end)
 --Kích Hoạt Auto Spin
 Tabs.Fruit:AddButton({
     Title = "Kaitun Auto Spin Fruit",
