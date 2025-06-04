@@ -1,4 +1,4 @@
---Main
+--Main Updated Auto Load !
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -43,13 +43,14 @@ local Tabs = {
     Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
     Rejoin = Window:AddTab({ Title = "Rejoin", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" })
+    Player = Window:AddTab({ Title = "Player", Icon = "" }),
+    Setting = Window:AddTab({ Title = "Setting",Icon = ""})
 }
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
-SaveManager:BuildConfigSection(Window:AddTab({ Title = "Setting", Icon = "" }))
+SaveManager:BuildConfigSection(Tabs.Setting)
 SaveManager:LoadAutoloadConfig()
 
 -- Toggle Icon
