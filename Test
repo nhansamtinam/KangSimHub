@@ -1,4 +1,4 @@
---Main Updated Auto Spin !!!
+--Main Updated Auto Spin !
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -462,24 +462,9 @@ autoSpinToggleRef = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Default = false,
     Callback = function(state)
         if state then
-            -- Hiện bảng xác nhận
-            game.StarterGui:SetCore("Prompt", {
-                Title = "Xác Nhận Bắt Đầu Auto Spin",
-                Text = "Bạn có chắc muốn bắt đầu Auto Spin không?",
-                Buttons = {
-                    {Text = "Yes", Callback = function()
-                        _G.autoSpinEnabled = true
-                        startAutoSpin()
-                    end},
-                    {Text = "No", Callback = function()
-                        _G.autoSpinEnabled = false
-                        -- Gạt toggle về OFF
-                        if autoSpinToggleRef and autoSpinToggleRef.SetState then
-                            autoSpinToggleRef:SetState(false)
-                        end
-                    end}
-                }
-            })
+            -- Bỏ phần hiện bảng xác nhận, bật auto spin luôn
+            _G.autoSpinEnabled = true
+            startAutoSpin()
         else
             _G.autoSpinEnabled = false
             print("Auto Spin đã tắt.")
