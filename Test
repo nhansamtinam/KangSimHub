@@ -1,4 +1,4 @@
---Main Updated Auto Spin !!
+--Main Updated Auto Spin !!!
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -428,7 +428,6 @@ Tabs.Main:AddToggle("Auto Find Boss", {
     end
 })
 -- Set Up Auto Spin
--- Biến lưu trạng thái toggle và danh sách trái cần
 _G.autoSpinEnabled = false
 _G.selectedFruitName = {}
 
@@ -445,7 +444,6 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     Multi = true,
     Default = {},
     Callback = function(value)
-        -- Chuyển dạng dữ liệu MultiDropdown thành table dạng mảng
         local selected = {}
         for fruitName, isSelected in pairs(value) do
             if isSelected then
@@ -458,14 +456,32 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
 })
 
 -- Toggle bật/tắt auto spin
-Tabs.Fruit:AddToggle("AutoSpinToggle", {
+local autoSpinToggleRef = nil
+autoSpinToggleRef = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Title = "Auto Spin",
     Default = false,
     Callback = function(state)
-        _G.autoSpinEnabled = state
         if state then
-            startAutoSpin()
+            -- Hiện bảng xác nhận
+            game.StarterGui:SetCore("Prompt", {
+                Title = "Xác Nhận Bắt Đầu Auto Spin",
+                Text = "Bạn có chắc muốn bắt đầu Auto Spin không?",
+                Buttons = {
+                    {Text = "Yes", Callback = function()
+                        _G.autoSpinEnabled = true
+                        startAutoSpin()
+                    end},
+                    {Text = "No", Callback = function()
+                        _G.autoSpinEnabled = false
+                        -- Gạt toggle về OFF
+                        if autoSpinToggleRef and autoSpinToggleRef.SetState then
+                            autoSpinToggleRef:SetState(false)
+                        end
+                    end}
+                }
+            })
         else
+            _G.autoSpinEnabled = false
             print("Auto Spin đã tắt.")
         end
     end
@@ -493,15 +509,19 @@ function startAutoSpin()
             if result and isRare(result) then
                 print("DỪNG! Gặp trái hiếm:", result)
                 _G.autoSpinEnabled = false
+                if autoSpinToggleRef and autoSpinToggleRef.SetState then
+                    autoSpinToggleRef:SetState(false) -- Gạt toggle về OFF
+                end
                 break
             else
                 print("Spin tiếp...")
             end
 
-            task.wait(3.5) -- Delay giữa mỗi lần spin
+            task.wait(3.5)
         end
     end)
 end
+
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
 Tabs.Setting:AddInput("ConfigNameInput", {
