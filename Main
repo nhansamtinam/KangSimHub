@@ -311,6 +311,59 @@ Tabs.Rejoin:AddButton({
         end)
     end
 })
+--Set Up Auto Spin
+local selectedFruitName = ""
+-- Dropdown Chọn Fruit
+Tabs.Fruit:AddDropdown("FruitSelector", {
+    Title = "Select Fruit For Stop Auto Spin",
+    Values = {
+    "Barrier",
+    "Chop",
+    "Sand",
+    "Smoke",
+    "Rubber",
+    "Falcon",
+    "Gas",
+    "Bomb",
+    "Ice",
+    "Darkness",
+    "Ash",
+    "Light",
+    "Flame",
+    "Magma",
+    "Paw",
+    "String",
+    "Love",
+    "Snow",
+    "Quake",
+    "Gravity",
+    "Phoenix",
+    "Dragon",
+    "TSRubber",
+    "Magnet",
+    "IceV2",
+    "MagmaV2",
+    "LightV2",
+    "FlameV2",
+    "Venom",
+    "Dough",
+    "Leopard",
+    "DoughV2",
+    "Ope",
+    "LeopardV2",
+    "Lightning",
+    "Nika",
+    "DragonV2",
+    "Soul",
+    "DarkXQuake",
+    "Okuchi"
+},
+    Multi = true,
+    Default = selectedFruitName,
+    Callback = function(value)
+        selectedFruitName = value
+    end
+})
 --Kích Hoạt Auto Spin
 Tabs.Fruit:AddButton({
     Title = "Kaitun Auto Spin Fruit",
