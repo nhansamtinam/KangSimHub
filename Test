@@ -328,7 +328,7 @@ _G.selectedFruitName = {}
 
 -- Dropdown chọn các trái muốn tìm
 Tabs.Fruit:AddDropdown("FruitSelector", {
-    Title = "Select Fruit For Stop Auto Spin",
+    Title = "Select Fruit For Stop Spin",
     Values = {
         "Barrier", "Chop", "Sand", "Smoke", "Rubber", "Falcon", "Gas", "Bomb", "Ice", "Darkness",
         "Ash", "Light", "Flame", "Magma", "Paw", "String", "Love", "Snow", "Quake", "Gravity",
