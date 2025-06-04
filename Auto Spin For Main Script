@@ -1,4 +1,3 @@
-
 local function isRare(fruitName)
     for _, v in pairs(_G.selectedFruitName or {}) do
         if string.lower(v) == string.lower(fruitName) then
