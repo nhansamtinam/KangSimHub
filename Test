@@ -1,4 +1,4 @@
---Main
+--Main V1
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -344,7 +344,7 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     end
 })
 
-_local autoSpinToggleObj = Tabs.Fruit:AddToggle("AutoSpinToggle", {
+local autoSpinToggleObj = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Title = "Auto Spin Fruit",
     Default = false,
     Callback = function(state)
