@@ -344,7 +344,7 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     end
 })
 
-_G.AutoSpinToggleUI = Tabs.Fruit:AddToggle("AutoSpinToggle", {
+_local autoSpinToggleObj = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Title = "Auto Spin Fruit",
     Default = false,
     Callback = function(state)
@@ -362,6 +362,9 @@ _G.AutoSpinToggleUI = Tabs.Fruit:AddToggle("AutoSpinToggle", {
         end
     end
 })
+-- ✅ Lưu đúng toggle object
+_G.AutoSpinToggleUI = autoSpinToggleObj
+
 --Kích Hoạt Auto Spin
 Tabs.Fruit:AddButton({
     Title = "Kaitun Auto Spin Fruit",Add commentMore actions
