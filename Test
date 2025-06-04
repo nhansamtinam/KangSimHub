@@ -424,7 +424,16 @@ Tabs.Main:AddToggle("Auto Find Boss", {
         end
     end
 })
-
+--Auto Find Katakuri
+Tabs.Main:AddToggle("Auto Find Boss", {
+    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Katakuri"))()
+        end
+    end
+})
 -- Cập nhật: Lưu config chính xác
 local currentConfigName = ""
 Tabs.Setting:AddInput("ConfigNameInput", {
