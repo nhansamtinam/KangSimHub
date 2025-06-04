@@ -321,58 +321,7 @@ Tabs.Misc:AddToggle("Anti AFK", {
         end
     end
 })
---Set Up Auto Spin
--- Biến toàn cục để lưu trạng thái và dữ liệu
-_G.autoSpinToggle = false
-_G.selectedFruitName = {}
 
--- Dropdown chọn các trái muốn tìm
-Tabs.Fruit:AddDropdown("FruitSelector", {
-    Title = "Select Fruit For Stop Spin",
-    Values = {
-        "Barrier", "Chop", "Sand", "Smoke", "Rubber", "Falcon", "Gas", "Bomb", "Ice", "Darkness",
-        "Ash", "Light", "Flame", "Magma", "Paw", "String", "Love", "Snow", "Quake", "Gravity",
-        "Phoenix", "Dragon", "TSRubber", "Magnet", "IceV2", "MagmaV2", "LightV2", "FlameV2",
-        "Venom", "Dough", "Leopard", "DoughV2", "Ope", "LeopardV2", "Lightning", "Nika", "DragonV2",
-        "Soul", "DarkXQuake", "Okuchi"
-    },
-    Multi = true,
-    Default = {},
-    Callback = function(value)
-        _G.selectedFruitName = value
-        print("Selected Fruits:", table.concat(value, ", "))
-    end
-})
-
-local autoSpinToggleObj = Tabs.Fruit:AddToggle("AutoSpinToggle", {
-    Title = "Auto Spin Fruit",
-    Default = false,
-    Callback = function(state)
-        _G.autoSpinToggle = state
-
-        if state then
-            print("🌀 Bật Auto Spin - Tải script từ GitHub...")
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Spin%20For%20Main%20Script"))()
-        else
-            print("🛑 Tắt Auto Spin")
-            if _G.AutoSpinThread then
-                task.cancel(_G.AutoSpinThread)
-                _G.AutoSpinThread = nil
-            end
-        end
-    end
-})
--- ✅ Lưu đúng toggle object
-_G.AutoSpinToggleUI = autoSpinToggleObj
-
---Kích Hoạt Auto Spin
-Tabs.Fruit:AddButton({
-    Title = "Kaitun Auto Spin Fruit",Add commentMore actions
-    Description = "Kích Hoạt Kaitun Auto Spin",Add commentMore actions
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
-    end
-}
 --Show Stats
 Tabs.Misc:AddToggle("ShowStats", {
     Title = "Show Stats",
