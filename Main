@@ -40,7 +40,8 @@ local Window = Fluent:CreateWindow({
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
-    Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
+    Teleport = Window:AddTab({ Title = "Map-Teleport", Icon = "" }),
+    Rejoin = Window:AddTab({ Title = "Sever-Rejoin", Icon =""}),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
     Player = Window:AddTab({ Title = "Player", Icon = "" })
 }
@@ -259,7 +260,7 @@ local hourInput = 0
 local minuteInput = 0
 local secondInput = 0
 
-Tabs.Sever:AddInput("HourInput", {
+Tabs.Rejoin:AddInput("HourInput", {
     Title = "Giờ",
     Default = "0",
     Placeholder = "Nhập số giờ",
@@ -269,7 +270,7 @@ Tabs.Sever:AddInput("HourInput", {
     end
 })
 
-Tabs.Sever:AddInput("MinuteInput", {
+Tabs.Rejoin:AddInput("MinuteInput", {
     Title = "Phút",
     Default = "0",
     Placeholder = "Nhập số phút",
@@ -279,7 +280,7 @@ Tabs.Sever:AddInput("MinuteInput", {
     end
 })
 
-Tabs.Sever:AddInput("SecondInput", {
+Tabs.Rejoin:AddInput("SecondInput", {
     Title = "Giây",
     Default = "0",
     Placeholder = "Nhập số giây",
@@ -289,7 +290,7 @@ Tabs.Sever:AddInput("SecondInput", {
     end
 })
 
-Tabs.Sever:AddButton({
+Tabs.Rejoin:AddButton({
     Title = "Nhấn Để Auto Rejoin",
     Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Mặc Định Là: 0 Giây)",
     Callback = function()
@@ -341,7 +342,7 @@ Tabs.Misc:AddToggle("ShowStats", {
     end
 })
 --Sever Hop
-Tabs.Sever:AddButton({
+Tabs.Rejoin:AddButton({
     Title = "Sever Hop",
     Description = "Join Another Sever",
     Callback = function()
@@ -349,7 +350,7 @@ Tabs.Sever:AddButton({
     end
 })
 --Sever Hop Less Player
-Tabs.Sever:AddButton({
+Tabs.Rejoin:AddButton({
     Title = "Sever Hop Less Player",
     Description = "Join Another Sever Less Player",
     Callback = function()
@@ -369,7 +370,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
 local selectedNPCName = "Soru Quest"
 
 -- Dropdown Chọn NPC
-Tabs.Sever:AddDropdown("NPCSelector", {
+Tabs.Teleport:AddDropdown("NPCSelector", {
     Title = "Chọn NPC",
     Values = { "Soru Book", "Soru Quest" },
     Multi = false,
@@ -380,7 +381,7 @@ Tabs.Sever:AddDropdown("NPCSelector", {
 })
 
 -- Nút Teleport
-Tabs.Sever:AddButton({
+Tabs.Teleport:AddButton({
     Title = "Teleport Đến NPC",
     Description = "Dịch chuyển đến NPC đã chọn",
     Callback = function()
