@@ -344,29 +344,24 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     end
 })
 
--- Toggle bật/tắt Auto Spin (chạy script phụ từ GitHub)
-Tabs.Fruit:AddToggle("AutoSpinToggle", {
+_G.AutoSpinToggleUI = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Title = "Auto Spin Fruit",
     Default = false,
     Callback = function(state)
         _G.autoSpinToggle = state
+
         if state then
             print("🌀 Bật Auto Spin - Tải script từ GitHub...")
-            -- Tải và chạy script từ GitHub
             loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Spin%20For%20Main%20Script"))()
         else
             print("🛑 Tắt Auto Spin")
+            if _G.AutoSpinThread then
+                task.cancel(_G.AutoSpinThread)
+                _G.AutoSpinThread = nil
+            end
         end
     end
 })
---Kích Hoạt Auto Spin
-Tabs.Fruit:AddButton({
-    Title = "Kaitun Auto Spin Fruit",Add commentMore actions
-    Description = "Kích Hoạt Kaitun Auto Spin",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
-    end
-}
 --Show Stats
 Tabs.Misc:AddToggle("ShowStats", {
     Title = "Show Stats",
