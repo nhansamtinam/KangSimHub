@@ -1,4 +1,4 @@
---Main Updated Auto Spin !
+--Main Updated Auto Spin !!
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -427,7 +427,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
         end
     end
 })
---Set Up Auto Spin
+-- Set Up Auto Spin
 -- Biến lưu trạng thái toggle và danh sách trái cần
 _G.autoSpinEnabled = false
 _G.selectedFruitName = {}
@@ -445,8 +445,15 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     Multi = true,
     Default = {},
     Callback = function(value)
-        _G.selectedFruitName = value
-        print("Selected fruits:", table.concat(value, ", "))
+        -- Chuyển dạng dữ liệu MultiDropdown thành table dạng mảng
+        local selected = {}
+        for fruitName, isSelected in pairs(value) do
+            if isSelected then
+                table.insert(selected, fruitName)
+            end
+        end
+        _G.selectedFruitName = selected
+        print("Selected fruits:", table.concat(selected, ", "))
     end
 })
 
@@ -464,7 +471,7 @@ Tabs.Fruit:AddToggle("AutoSpinToggle", {
     end
 })
 
--- Hàm kiểm tra trái có nằm trong danh sách cần
+-- Hàm kiểm tra trái có nằm trong danh sách cần dừng
 local function isRare(fruitName)
     for _, v in pairs(_G.selectedFruitName or {}) do
         if string.lower(v) == string.lower(fruitName) then
@@ -491,7 +498,7 @@ function startAutoSpin()
                 print("Spin tiếp...")
             end
 
-            task.wait(3.5) -- 2.5 + 1 giây chờ như ban đầu
+            task.wait(3.5) -- Delay giữa mỗi lần spin
         end
     end)
 end
