@@ -539,7 +539,7 @@ updateConfigListDropdown()
 
 local autoloadConfig = SaveManager:GetAutoloadConfig()
 if autoloadConfig and autoloadConfig ~= "" then
-    task.delay(2, function()
+    task.delay(10, function()
         SaveManager:LoadConfig(autoloadConfig)
         game.StarterGui:SetCore("SendNotification", {
             Title = "Autoload",
