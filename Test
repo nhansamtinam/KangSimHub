@@ -41,6 +41,7 @@ local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "" }),
     Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
     Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
+    Rejoin = Window:AddTab({ Title = "Rejoin", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
     Player = Window:AddTab({ Title = "Player", Icon = "" })
 }
@@ -259,7 +260,7 @@ local hourInput = 0
 local minuteInput = 0
 local secondInput = 0
 
-Tabs.Sever:AddInput("HourInput", {
+Tabs.Rejoin:AddInput("HourInput", {
     Title = "Giờ",
     Default = "0",
     Placeholder = "Nhập số giờ",
@@ -269,7 +270,7 @@ Tabs.Sever:AddInput("HourInput", {
     end
 })
 
-Tabs.Sever:AddInput("MinuteInput", {
+Tabs.Rejoin:AddInput("MinuteInput", {
     Title = "Phút",
     Default = "0",
     Placeholder = "Nhập số phút",
@@ -279,7 +280,7 @@ Tabs.Sever:AddInput("MinuteInput", {
     end
 })
 
-Tabs.Sever:AddInput("SecondInput", {
+Tabs.Rejoin:AddInput("SecondInput", {
     Title = "Giây",
     Default = "0",
     Placeholder = "Nhập số giây",
@@ -289,7 +290,7 @@ Tabs.Sever:AddInput("SecondInput", {
     end
 })
 
-Tabs.Sever:AddButton({
+Tabs.Rejoin:AddButton({
     Title = "Nhấn Để Auto Rejoin",
     Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Mặc Định Là: 0 Giây)",
     Callback = function()
