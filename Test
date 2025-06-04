@@ -419,7 +419,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
 })
 --Auto Find Katakuri
 Tabs.Main:AddToggle("Auto Find Boss", {
-    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
+    Title = "Auto Find Boss(Katakuri)",
     Default = false,
     Callback = function(value)
         if value then
