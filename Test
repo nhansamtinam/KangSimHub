@@ -1,4 +1,4 @@
---Main Updated Auto Load !!!
+--Main
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -535,17 +535,19 @@ Tabs.Fruit:AddButton({
     end
 })
 
--- Gọi cập nhật config lúc khởi tạo
 updateConfigListDropdown()
--- Tự động load config đã được đánh dấu là autoload (nếu có)
+
 local autoloadConfig = SaveManager:GetAutoloadConfig()
 if autoloadConfig and autoloadConfig ~= "" then
-    SaveManager:LoadConfig(autoloadConfig)
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Autoload",
-        Text = "Đã tự động load config: " .. autoloadConfig,
-        Duration = 5,
-        Icon = "rbxassetid://138706932256796"
-    })
+    task.delay(2, function()
+        SaveManager:LoadConfig(autoloadConfig)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Autoload",
+            Text = "Đã tự động load config: " .. autoloadConfig,
+            Duration = 5,
+            Icon = "rbxassetid://138706932256796"
+        })
+    end)
 end
+
 Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
