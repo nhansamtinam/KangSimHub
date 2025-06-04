@@ -1,4 +1,4 @@
---Main
+--Main Updated Auto Load !
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 
 getgenv().Key = "trongkim19052009"
@@ -43,13 +43,14 @@ local Tabs = {
     Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
     Rejoin = Window:AddTab({ Title = "Rejoin", Icon = "" }),
     Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "" })
+    Player = Window:AddTab({ Title = "Player", Icon = "" }),
+    Setting = Window:AddTab({ Title = "Setting",Icon = ""})
 }
 InterfaceManager:SetLibrary(Fluent)
 SaveManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
-SaveManager:BuildConfigSection(Window:AddTab({ Title = "Setting", Icon = "" }))
+SaveManager:BuildConfigSection(Tabs.Setting)
 SaveManager:LoadAutoloadConfig()
 
 -- Toggle Icon
@@ -525,86 +526,11 @@ function startAutoSpin()
         end
     end)
 end
-
--- Cập nhật: Lưu config chính xác
-local currentConfigName = ""
-Tabs.Setting:AddInput("ConfigNameInput", {
-    Title = "Tên Config",
-    Default = "",
-    Placeholder = "Nhập tên config để lưu",
-    Numeric = false,
-    Callback = function(value)
-        currentConfigName = value
-    end
-})
-
--- Dropdown chọn config để load
-local configDropdown = Tabs.Setting:AddDropdown("ConfigSelector", {
-    Title = "Chọn Config Load",
-    Values = {},
-    Multi = false,
-    Default = "",
-    Callback = function(value)
-        if value and value ~= "" then
-            SaveManager:LoadConfig(value)
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Đã Load Config",
-                Text = "Đã load config: " .. value,
-                Duration = 5,
-                Icon = "rbxassetid://138706932256796"
-            })
-        end
-    end
-})
-
--- Hàm cập nhật danh sách config
-local function updateConfigListDropdown()
-    local configs = SaveManager:GetConfigs() or {}
-    if #configs == 0 then
-        configs = { "Chưa có config nào" }
-    end
-    configDropdown:SetValues(configs)
-    configDropdown:SetValue(configs[1])
-end
-
--- Nút lưu config
-Tabs.Setting:AddButton({
-    Title = "Lưu Config",
-    Description = "Lưu cấu hình hiện tại với tên đã nhập",
+--Kích Hoạt Kaitun Auto Spin
+Tabs.Fruit:AddButton({
+    Title = "Kaitun Auto Spin Fruit",
+    Description = "Kích Hoạt Kaitun Auto Spin",
     Callback = function()
-        if currentConfigName == "" then
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "Lỗi",
-                Text = "Vui lòng nhập tên config trước khi lưu!",
-                Duration = 5,
-                Icon = "rbxassetid://138706932256796"
-            })
-            return
-        end
-        SaveManager:SaveConfig(currentConfigName)
-        SaveManager:SetAutoloadConfig(currentConfigName)
-
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "Thành Công",
-            Text = "Đã lưu config: " .. currentConfigName,
-            Duration = 5,
-            Icon = "rbxassetid://138706932256796"
-        })
-        updateConfigListDropdown()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
     end
 })
-
--- Gọi cập nhật config lúc khởi tạo
-updateConfigListDropdown()
--- Tự động load config đã được đánh dấu là autoload (nếu có)
-local autoloadConfig = SaveManager:GetAutoloadConfig()
-if autoloadConfig and autoloadConfig ~= "" then
-    SaveManager:LoadConfig(autoloadConfig)
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "Autoload",
-        Text = "Đã tự động load config: " .. autoloadConfig,
-        Duration = 5,
-        Icon = "rbxassetid://138706932256796"
-    })
-end
-Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
