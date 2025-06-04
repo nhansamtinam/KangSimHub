@@ -1,0 +1,506 @@
+--Main
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+
+getgenv().Key = "trongkim19052009"
+local validKeys = {
+    ["trongkim19052009"] = true,
+}
+
+local player = game.Players.LocalPlayer
+task.wait(1)
+
+if not validKeys[getgenv().Key] then
+    player:Kick("Key sai?. Bạn đã bị loại.")
+    return
+end
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "KimSoi Hub",
+    Text = "Đã Tải Xong",
+    Duration = 10,
+    Icon = "rbxassetid://138706932256796"
+})
+
+task.wait(1.5)
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "KimSoi Hub",
+    SubTitle = "By KimSoi",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(540, 450),
+    Acrylic = true,
+    Theme = "Default",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+-- Tabs
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" }),
+    Misc = Window:AddTab({ Title = "Misc", Icon = "" }),
+    Sever = Window:AddTab({ Title = "Sever-Teleport", Icon = "" }),
+    Fruit = Window:AddTab({ Title = "Fruit", Icon = "" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "" })
+}
+InterfaceManager:SetLibrary(Fluent)
+SaveManager:SetLibrary(Fluent)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+SaveManager:BuildConfigSection(Window:AddTab({ Title = "Setting", Icon = "" }))
+SaveManager:LoadAutoloadConfig()
+
+-- Toggle Icon
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local ImageLabel = Instance.new("ImageLabel")
+local UICorner = Instance.new("UICorner")
+local TextButton = Instance.new("TextButton")
+
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.AnchorPoint = Vector2.new(0.1, 0.1)
+Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Frame.Position = UDim2.new(0, 20, 0.1, -6)
+Frame.Size = UDim2.new(0, 50, 0, 50)
+Frame.Name = "ToggleIcon"
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = Frame
+
+ImageLabel.Parent = Frame
+ImageLabel.Name = "Icon"
+ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+ImageLabel.Size = UDim2.new(0, 60, 0, 60)
+ImageLabel.BackgroundTransparency = 1
+ImageLabel.Image = "rbxassetid://138706932256796"
+
+TextButton.Name = "HotkeyButton"
+TextButton.Parent = Frame
+TextButton.Size = UDim2.new(1, 0, 1, 0)
+TextButton.BackgroundTransparency = 1
+TextButton.Text = ""
+
+local VirtualInputManager = game:GetService("VirtualInputManager")
+TextButton.MouseButton1Down:Connect(function()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.LeftControl, false, game)
+end)
+-- Auto Farm
+local autoFarmEnabled = false
+Tabs.Main:AddToggle("AutoFarmToggle", {
+    Title = "Auto Farm",
+    Default = false,
+    Callback = function(value)
+        autoFarmEnabled = value
+        shared.autoFarm = value
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Farm"))()
+        end
+    end
+})
+
+-- Auto Boss
+Tabs.Main:AddToggle("AutoBossToggle", {
+    Title = "Auto Boss",
+    Default = false,
+    Callback = function(value)
+        autoBossEnabled = value
+        shared.autoBoss = value
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Boss%20For%20Main%20Script"))()
+        end
+    end
+})
+
+-- Auto Check Mana
+Tabs.Main:AddToggle("AutoCheckManaToggle", {
+    Title = "Auto Check Mana",
+    Default = false,
+    Callback = function(value)
+        autoCheckManaEnabled = value
+        shared.autoCheckMana = value
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AutoCheckManaForMainScript"))()
+        end
+    end
+})
+
+-- Chọn Slot
+local selectedSlot = 1
+Tabs.Misc:AddDropdown("SlotSelector", {
+    Title = "Chọn Slot Trái Ác Quỷ",
+    Values = { "1", "2", "3", "4", "5", "6", "7", "8" },
+    Multi = false,
+    Default = "1",
+    Callback = function(value)
+        selectedSlot = tonumber(value)
+        print("Đã chọn slot: " .. selectedSlot)
+    end
+})
+
+-- Gửi lệnh SwitchSlot
+Tabs.Misc:AddButton({
+    Title = "Chuyển Đến Slot Đã Chọn",
+    Description = "Gửi lệnh SwitchSlot với slot đã chọn",
+    Callback = function()
+        local args = {
+            "FruitsHandler",
+            "SwitchSlot",
+            {
+                Slot = selectedSlot
+            }
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
+        print("Đã gửi lệnh SwitchSlot đến slot: " .. selectedSlot)
+    end
+})
+
+-- Boost FPS Toggle
+local boostFPSEnabled = false
+Tabs.Misc:AddToggle("BoostFPSToggle", {
+    Title = "Whit Screen",
+    Default = false,
+    Callback = function(value)
+        boostFPSEnabled = value
+        local lighting = game:GetService("Lighting")
+        local terrain = workspace.Terrain
+        if boostFPSEnabled then
+            lighting.GlobalShadows = false
+            lighting.FogEnd = 9e9
+            lighting.Brightness = 1
+            lighting.ClockTime = 14
+            lighting.Ambient = Color3.new(0, 0, 0)
+            lighting.OutdoorAmbient = Color3.new(0, 0, 0)
+            terrain.WaterWaveSize = 0
+            terrain.WaterWaveSpeed = 0
+            terrain.WaterReflectance = 0
+            terrain.WaterTransparency = 0
+            game:GetService("RunService"):Set3dRenderingEnabled(false)
+        else
+            lighting.GlobalShadows = true
+            lighting.FogEnd = 100000
+            lighting.Brightness = 2
+            lighting.ClockTime = 14
+            lighting.Ambient = Color3.fromRGB(128, 128, 128)
+            lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+            terrain.WaterWaveSize = 1
+            terrain.WaterWaveSpeed = 1
+            terrain.WaterReflectance = 0.5
+            terrain.WaterTransparency = 0.5
+            game:GetService("RunService"):Set3dRenderingEnabled(true)
+        end
+    end
+})
+
+Tabs.Misc:AddButton({
+    Title = "Boost FPS",
+    Description = "Giảm Đồ Họa",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/BoostFPS/refs/heads/main/BoostFPS"))()
+    end
+})
+
+Tabs.Misc:AddButton({
+    Title = "Redeem All Code",
+    Description = "Redeem All Code",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Redeem%20Code"))()
+    end
+})
+-- Danh sách Map và ID tương ứng
+local mapIds = {
+    ["Dressrosa"] = 9224601490,
+    ["Wano"] = 12413901502,
+    ["Whole Cake"] = 16190471004,
+    ["Ranked Map"] = 17493355683
+}
+
+-- Mặc định map được chọn
+local selectedMapName = "Dressrosa"
+
+-- Dropdown chọn map
+Tabs.Sever:AddDropdown("MapSelector", {
+    Title = "Chọn Map",
+    Values = { "Dressrosa", "Wano", "Whole Cake", "Ranked Map" },
+    Multi = false,
+    Default = selectedMapName,
+    Callback = function(value)
+        selectedMapName = value
+    end
+})
+
+-- Nút Teleport
+Tabs.Sever:AddButton({
+    Title = "Teleport Đến Map",
+    Description = "Dịch chuyển đến map đã chọn",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+
+        local placeId = mapIds[selectedMapName]
+        if not placeId then
+            warn("❌ Không tìm thấy ID cho map: " .. tostring(selectedMapName))
+            return
+        end
+
+        print("🔹 Đang dịch chuyển đến:", selectedMapName, " (PlaceId:", placeId, ")")
+        TeleportService:Teleport(placeId, player)
+    end
+})
+-- Auto Rejoin Setup
+local rejoinDelay = 0
+local hourInput = 0
+local minuteInput = 0
+local secondInput = 0
+
+Tabs.Sever:AddInput("HourInput", {
+    Title = "Giờ",
+    Default = "0",
+    Placeholder = "Nhập số giờ",
+    Numeric = true,
+    Callback = function(value)
+        hourInput = tonumber(value) or 0
+    end
+})
+
+Tabs.Sever:AddInput("MinuteInput", {
+    Title = "Phút",
+    Default = "0",
+    Placeholder = "Nhập số phút",
+    Numeric = true,
+    Callback = function(value)
+        minuteInput = tonumber(value) or 0
+    end
+})
+
+Tabs.Sever:AddInput("SecondInput", {
+    Title = "Giây",
+    Default = "0",
+    Placeholder = "Nhập số giây",
+    Numeric = true,
+    Callback = function(value)
+        secondInput = tonumber(value) or 0
+    end
+})
+
+Tabs.Sever:AddButton({
+    Title = "Nhấn Để Auto Rejoin",
+    Description = "Rejoin Sau Khoảng Thời Gian Đã Cài(Mặc Định Là: 0 Giây)",
+    Callback = function()
+        rejoinDelay = (hourInput * 3600) + (minuteInput * 60) + secondInput
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Auto Rejoin",
+            Text = "Sẽ tự rejoin sau " .. rejoinDelay .. " giây",
+            Duration = 8,
+            Icon = "rbxassetid://138706932256796"
+        })
+
+        task.spawn(function()
+            while true do
+                task.wait(rejoinDelay)
+                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+            end
+        end)
+    end
+})
+--Kích Hoạt Auto Spin
+Tabs.Fruit:AddButton({
+    Title = "Kaitun Auto Spin Fruit",
+    Description = "Kích Hoạt Kaitun Auto Spin",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
+    end
+})
+--Anti AFK
+Tabs.Misc:AddToggle("Anti AFK", {
+    Title = "Anti AFK",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/AntiAFK"))()
+        end
+    end
+})
+--Show Stats
+Tabs.Misc:AddToggle("ShowStats", {
+    Title = "Show Stats",
+    Default = false,
+    Callback = function(value)
+        ShowStatsEnabled = value
+        shared.ShowStats = value
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Show%20Stats"))()
+        end
+    end
+})
+--Sever Hop
+Tabs.Sever:AddButton({
+    Title = "Sever Hop",
+    Description = "Join Another Sever",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop"))()
+    end
+})
+--Sever Hop Less Player
+Tabs.Sever:AddButton({
+    Title = "Sever Hop Less Player",
+    Description = "Join Another Sever Less Player",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Sever%20Hop%20Less%20Player"))()
+    end
+})
+--Auto Find Boss
+Tabs.Main:AddToggle("Auto Find Boss", {
+    Title = "Auto Find Boss(Macro,Big Mon, Kaido)",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Auto%20Find%20Boss"))()
+        end
+    end
+})
+local selectedNPCName = "Soru Quest"
+
+-- Dropdown Chọn NPC
+Tabs.Sever:AddDropdown("NPCSelector", {
+    Title = "Chọn NPC",
+    Values = { "Soru Book", "Soru Quest" },
+    Multi = false,
+    Default = selectedNPCName,
+    Callback = function(value)
+        selectedNPCName = value
+    end
+})
+
+-- Nút Teleport
+Tabs.Sever:AddButton({
+    Title = "Teleport Đến NPC",
+    Description = "Dịch chuyển đến NPC đã chọn",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+
+        if not hrp then
+            warn("Không tìm thấy HumanoidRootPart của người chơi.")
+            return
+        end
+
+        if selectedNPCName == "Soru Quest" then
+            -- Dịch chuyển đến tọa độ cố định của Soru Quest
+            local function fastTeleport()
+                local hrpCheck
+                repeat
+                    hrpCheck = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                    task.wait()
+                until hrpCheck and player.Character.Parent ~= nil
+
+                hrpCheck.CFrame = CFrame.new(-773.96, 835.93, 696.97)
+            end
+            fastTeleport()
+
+        elseif selectedNPCName == "Soru Book" then
+            -- Dịch chuyển đến NPC "Soru Book"
+            local npcFolder = workspace:FindFirstChild("NPCs")
+            local target = npcFolder and npcFolder:FindFirstChild("Soru Book")
+
+            if target and target:FindFirstChild("HumanoidRootPart") then
+                hrp.CFrame = target.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
+            else
+                warn("Không tìm thấy NPC 'Soru Book' hoặc thiếu HumanoidRootPart.")
+            end
+
+        else
+            warn("Chưa chọn NPC hoặc NPC không hợp lệ.")
+        end
+    end
+})
+-- Cập nhật: Lưu config chính xác
+local currentConfigName = ""
+Tabs.Setting:AddInput("ConfigNameInput", {
+    Title = "Tên Config",
+    Default = "",
+    Placeholder = "Nhập tên config để lưu",
+    Numeric = false,
+    Callback = function(value)
+        currentConfigName = value
+    end
+})
+
+-- Dropdown chọn config để load
+local configDropdown = Tabs.Setting:AddDropdown("ConfigSelector", {
+    Title = "Chọn Config Load",
+    Values = {},
+    Multi = false,
+    Default = "",
+    Callback = function(value)
+        if value and value ~= "" then
+            SaveManager:LoadConfig(value)
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Đã Load Config",
+                Text = "Đã load config: " .. value,
+                Duration = 5,
+                Icon = "rbxassetid://138706932256796"
+            })
+        end
+    end
+})
+
+-- Hàm cập nhật danh sách config
+local function updateConfigListDropdown()
+    local configs = SaveManager:GetConfigs() or {}
+    if #configs == 0 then
+        configs = { "Chưa có config nào" }
+    end
+    configDropdown:SetValues(configs)
+    configDropdown:SetValue(configs[1])
+end
+
+-- Nút lưu config
+Tabs.Setting:AddButton({
+    Title = "Lưu Config",
+    Description = "Lưu cấu hình hiện tại với tên đã nhập",
+    Callback = function()
+        if currentConfigName == "" then
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "Lỗi",
+                Text = "Vui lòng nhập tên config trước khi lưu!",
+                Duration = 5,
+                Icon = "rbxassetid://138706932256796"
+            })
+            return
+        end
+        SaveManager:SaveConfig(currentConfigName)
+        SaveManager:SetAutoloadConfig(currentConfigName)
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Thành Công",
+            Text = "Đã lưu config: " .. currentConfigName,
+            Duration = 5,
+            Icon = "rbxassetid://138706932256796"
+        })
+        updateConfigListDropdown()
+    end
+})
+
+-- Gọi cập nhật config lúc khởi tạo
+updateConfigListDropdown()
+-- Tự động load config đã được đánh dấu là autoload (nếu có)
+local autoloadConfig = SaveManager:GetAutoloadConfig()
+if autoloadConfig and autoloadConfig ~= "" then
+    SaveManager:LoadConfig(autoloadConfig)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Autoload",
+        Text = "Đã tự động load config: " .. autoloadConfig,
+        Duration = 5,
+        Icon = "rbxassetid://138706932256796"
+    })
+end
+Tabs.Setting:AddParagraph("AutoloadInfo", "Config tự động load hiện tại: " .. (autoloadConfig or "Không có"))
