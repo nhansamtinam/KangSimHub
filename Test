@@ -430,6 +430,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
 -- Set Up Auto Spin
 _G.autoSpinEnabled = false
 _G.selectedFruitName = {}
+_G.selectedSpinType = "Normal"  -- Mặc định spin Normal
 
 -- Dropdown chọn trái cần dừng khi spin trúng
 Tabs.Fruit:AddDropdown("FruitSelector", {
@@ -455,6 +456,18 @@ Tabs.Fruit:AddDropdown("FruitSelector", {
     end
 })
 
+-- Dropdown chọn kiểu spin (Normal / Fast)
+Tabs.Fruit:AddDropdown("SpinTypeSelector", {
+    Title = "Select Spin Type",
+    Values = {"Normal", "Fast"},
+    Multi = false,
+    Default = "Normal",
+    Callback = function(value)
+        _G.selectedSpinType = value
+        print("Selected spin type:", value)
+    end
+})
+
 -- Toggle bật/tắt auto spin
 local autoSpinToggleRef = nil
 autoSpinToggleRef = Tabs.Fruit:AddToggle("AutoSpinToggle", {
@@ -462,7 +475,6 @@ autoSpinToggleRef = Tabs.Fruit:AddToggle("AutoSpinToggle", {
     Default = false,
     Callback = function(state)
         if state then
-            -- Bỏ phần hiện bảng xác nhận, bật auto spin luôn
             _G.autoSpinEnabled = true
             startAutoSpin()
         else
@@ -487,7 +499,14 @@ function startAutoSpin()
     task.spawn(function()
         print("Auto Spin đang chạy...")
         while _G.autoSpinEnabled do
-            local args = {"FruitsHandler", "Spin", {}}
+            local spinArgs = {Type = {}}
+            if _G.selectedSpinType == "Fast" then
+                spinArgs = {Type = "Fast"}
+            else
+                spinArgs = {}
+            end
+
+            local args = {"FruitsHandler", "Spin", spinArgs}
             local result = game:GetService("ReplicatedStorage"):WaitForChild("Replicator"):InvokeServer(unpack(args))
             print("Kết quả spin trả về từ server:", result)
 
