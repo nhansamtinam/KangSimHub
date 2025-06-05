@@ -533,7 +533,6 @@ Tabs.Fruit:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
     end
 })
-task.wait(3)
 SaveManager:LoadAutoloadConfig()
 updateConfigListDropdown()
 
