@@ -17,12 +17,48 @@ local currentFruit = nil
 local currentHumanoid = nil
 local characterReady = false
 
--- 💥 Danh sách kỹ năng theo trái ác quỷ (rút gọn vì không thay đổi)
-
+-- 💥 Danh sách kỹ năng theo trái ác quỷ
 local skills = {
+    Barrier = {"Barrier", "Bubble", "Crash", "Spikes"},
+    Chop = {"Cannon", "Grab", "Car", "Festival"},
+    Sand = {"DesertSlicer", "Spada", "Swamp", "SablesPesado"},
+    Smoke = {"WhiteBlow", "WhiteOut", "Typhoon", "Firework"},
     Rubber = {"Pistol", "Bazooka", "Gatling", "Rocket", "Gear2"},
+    Falcon = {"WingSlicer", "FlyingTalon", "WingCyclone", "FalconPunch"},
+    Gas = {"BlueSword", "Suffocation", "CombustiveGas", "RelaxingGas"},
+    Bomb = {"GrenadeBlaster", "Leap", "KickBomb", "HowitzerImpact"},
+    Ice = {"Partisan", "Geyser", "Pheasant", "IceAge", "IceDragon"},
+    Darkness = {"BlackHole", "Liberation", "BlackWorld", "Kurouzu", "DarkHaul", "DarkEnd"},
+    Ash = {"ThousandCrows", "Obelisk", "CrowCascade", "CrowCoffin"},
+    Light = {"LightKick", "MirrorKick", "BlindingCombo", "Guzan", "JewelsOfLight", "Flight"},
     Flame = {"FireFist", "FireGun", "Pillar", "Beam", "Enkai", "Flight"},
-    -- Thêm các trái khác nếu cần
+    Magma = {"MajorEruption", "MeteorVolcano", "Plume", "EruptiveSurge", "HellHound"},
+    Paw = {"PressureCannon", "SonicStomp", "SumoThrustBarrage", "Torture", "UrsusShock"},
+    String = {"Fullbright", "OverheatWhip", "StringKnight", "SixteenBullets", "Skywalk"},
+    Love = {"CupidsArrows", "BouquetOfPain", "Heartthrob", "Heartstrings", "BlossomWind"},
+    Snow = {"SnowAngel", "WinterStorm", "FrostDome", "SnowballCatastrophe", "SnowDrift"},
+    Quake = {"Fist", "Eruption", "Slam", "IslandShake", "SeaQuake"},
+    Gravity = {"Push", "Launch", "Avalanche", "Shoot", "PlanetaryDevastation", "GreatMeteor"},
+    Phoenix = {"Fujiazami", "TalonSlam", "PhoenixInferno", "Bluebird", "Transform", "HawkRush"},
+    Dragon = {"DragonBreath", "DragonClaw", "Screech", "DracoMeteor", "CrimsonBomb", "Transformation", "Tatsumaki"},
+    TSRubber = {"JetPistol", "JetGatling", "RedHawk", "GrizzlyMagnum", "Gear4", "KongGun", "Culverin", "KongGatling", "KingKongGun", "ElasticPropulsion"},
+    Magnet = {"Repel", "MetalArms", "Cyclone", "PunkPrison", "PunkCannon"},
+    IceV2 = {"PiercingGlacier", "BlizzardBlade", "IceHail", "AbsoluteZero", "IceSkate"},
+    MagmaV2 = {"HoundBlaze", "MagmaRain", "MagmaFloor", "Meigo", "CrimsonHowl"},
+    LightV2 = {"PiercingShine", "PhotonStorm", "XFlash", "HeavenlyDescent", "SolarGrenade", "MirrorFlight"},
+    FlameV2 = {"ScorchingFist", "TwistingClaw", "BlazingMeteor", "CrimsonBody", "Supernova"},
+    Venom = {"ChloroFrenzy", "VenomRoad", "ToxicHydra", "PoisonStorm", "HydraCyclone", "Transform", "PoisonGeyser", "ToxicGeyser"},
+    Dough = {"GrilledDough", "DoughMuddle", "LotusDoughCombo", "Chestnut", "Anemone", "Buzzcut"},
+    Leopard = {"AfterimageCombo", "SpiralKick", "ClawBarrage", "PredatorsProwl", "Transform", "Rokuogan", "RisingClawCombo"},
+    DoughV2 = {"GrilledLance", "ElasticLasso", "Oblivion", "PowerDough", "BlazingStorm", "ScorchingBuzzcut"},
+    Ope = {"Room", "Takt", "Wreckage", "HurricaneShock", "GammaKnife", "Mes", "Shambles"},
+    LeopardV2 = {"FingerPistolBarrage", "SonicKick", "InfinityDrive", "UnrelentingAssault", "Transform", "HeavensDemise"},
+    Lightning = {"VoltageUp", "LightningPalm", "CrashingThunder", "ProjectedBurst", "CrushingJudgment", "Raigo"},
+    Nika = {"RocGun", "NeoRedHawk", "RocGatling", "RedRoc", "DrumsOfLiberation", "Gear5", "SpinningTop", "DawnRocket", "MolePistolCombo", "RisingBolt", "GigantStamp", "BajrangGun"},
+    DragonV2 = {"InfernoBreath", "ThunderBagua", "DragonTwister", "BeastsBellow", "Transform", "BoloFrenzy", "FlamingTorch", "Demolition", "Transformation"},
+    Soul = {"EnthralGrasp", "ScorchingSickle", "ZeusMeadow", "CrimsonPillar", "Transform", "MaserCannon"},
+    DarkXQuake = {"AntiQuake", "BlackHolePath", "BlackTurret", "NeoKurouzuCombo", "AntiBody", "QuadraSeaQuake"},
+    Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent", "Transform"},
 }
 
 -- ✅ Kiểm tra cooldown
