@@ -51,7 +51,6 @@ SaveManager:SetLibrary(Fluent)
 SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({})
 SaveManager:BuildConfigSection(Tabs.Setting)
-SaveManager:LoadAutoloadConfig()
 
 -- Toggle Icon
 local ScreenGui = Instance.new("ScreenGui")
@@ -535,6 +534,7 @@ Tabs.Fruit:AddButton({
     end
 })
 task.wait(10)
+SaveManager:LoadAutoloadConfig()
 updateConfigListDropdown()
 
 local autoloadConfig = SaveManager:GetAutoloadConfig()
