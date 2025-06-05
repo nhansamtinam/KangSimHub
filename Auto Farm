@@ -1,3 +1,4 @@
+--Updated
 -- 📌 Kích hoạt qua biến toàn cục từ UI chính
 shared.autoFarm = shared.autoFarm or false -- Gán mặc định nếu chưa có
 
