@@ -166,12 +166,20 @@ local function pressEnter()
     VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
 end
 
--- 📍 Dịch chuyển
+-- 📍 Dịch chuyển nhanh tùy theo PlaceId
 local function fastTeleport()
     local character = player.Character or player.CharacterAdded:Wait()
     local hrp
     repeat hrp = character:FindFirstChild("HumanoidRootPart") task.wait() until hrp
-    hrp.CFrame = CFrame.new(-1420, 798.93, -85)
+
+    local placeId = game.PlaceId
+    if placeId == 12413901502 then
+        hrp.CFrame = CFrame.new(-2229, 534, 1384)
+    elseif placeId == 16190471004 then
+        hrp.CFrame = CFrame.new(592, 2178, -1481)
+    else -- Mặc định giữ nguyên cho id 9224601490 hoặc các id khác
+        hrp.CFrame = CFrame.new(-1420, 798.93, -85)
+    end
 end
 
 -- 🧠 Cài nhân vật
@@ -214,7 +222,7 @@ task.spawn(function()
                 GuiService.SelectedObject = playButton
                 task.wait(5)
                 pressEnter()
-                task.delay(2, fastTeleport)
+                task.delay(4, fastTeleport)
             end
             task.wait(5)
         end
