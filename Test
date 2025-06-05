@@ -603,13 +603,24 @@ Tabs.Player:AddToggle("FollowLowestHP", {
         end
     end
 })
-
 --Kích Hoạt Kaitun Auto Spin
-Tabs.Fruit:AddButton({
-    Title = "Kaitun Auto Spin Fruit",
-    Description = "Kích Hoạt Kaitun Auto Spin",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
+Tabs.Fruit:AddToggle("Kaitun Mythical", {
+    Title = "Kaitun Auto Find Fruit Mythical",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun"))()
+        end
+    end
+})
+--Kích Hoạt Kaitun Auto Spin Legend
+Tabs.Fruit:AddToggle("Kaitun Legend", {
+    Title = "Kaitun Auto Find Fruit Mythical - Legend",
+    Default = false,
+    Callback = function(value)
+        if value then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/nhansamtinam/KimSoiHub/refs/heads/main/Kaitun%20Legend"))()
+        end
     end
 })
 SaveManager:LoadAutoloadConfig()
