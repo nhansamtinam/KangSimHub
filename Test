@@ -94,7 +94,7 @@ end)
 -- Auto Farm
 local autoFarmEnabled = false
 Tabs.Main:AddToggle("AutoFarmToggle", {
-    Title = "Auto Farm",
+    Title = "Start/Stop Farm",
     Default = false,
     Callback = function(value)
         autoFarmEnabled = value
@@ -104,7 +104,16 @@ Tabs.Main:AddToggle("AutoFarmToggle", {
         end
     end
 })
-
+--Auto Farm Ảo
+Tabs.Main:AddToggle("AutoFarmAoToggle", {
+    Title = "Auto Farm Level",
+    Default = false,
+    Callback = function(value)
+        if value then
+            print("Tunred On Auto Farm Level")
+        end
+    end
+})
 -- Auto Boss
 Tabs.Main:AddToggle("AutoBossToggle", {
     Title = "Auto Boss",
