@@ -1,4 +1,5 @@
---Updated Auto Farm!
+--Updated Auto Farm
+-- Updated Auto Farm with movement detection and complete toggle control
 shared.autoFarm = shared.autoFarm or false
 
 local Players = game:GetService("Players")
@@ -6,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GuiService = game:GetService("GuiService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local gui = player:WaitForChild("PlayerGui")
@@ -19,6 +21,7 @@ local lockUntil = 0
 local lockForever = false
 local lastTeleportTime = 0
 local hasTeleported = false
+local userMoved = false
 
 local skills = {
     Barrier = {"Barrier", "Bubble", "Crash", "Spikes"},
@@ -91,14 +94,13 @@ local function watchSlotChanges()
 end
 
 local function castSkill(fruit, skill)
-    if not fruit or not skill or not isSkillReady(skill) then return end
-    if not shared.autoFarm then return end
+    if not fruit or not skill or not isSkillReady(skill) or not shared.autoFarm then return end
 
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    if lockForever then
+    if lockForever and not userMoved then
         hrp.Velocity = Vector3.zero
         hrp.CFrame = CFrame.new(lockedPosition)
     end
@@ -174,10 +176,14 @@ local function fastTeleport()
     lastTeleportTime = tick()
     hasTeleported = true
 
-    task.delay(15, function()
-        if shared.autoFarm then
-            lockForever = true
-            lockUntil = math.huge
+    task.delay(20, function()
+        if shared.autoFarm and not userMoved then
+            local currentHRP = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if currentHRP then
+                lockedPosition = currentHRP.Position
+                lockForever = true
+                lockUntil = math.huge
+            end
         end
     end)
 end
@@ -203,14 +209,23 @@ local function setupCharacter(character)
     end)
 end
 
+UserInputService.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Keyboard
+        or input.UserInputType == Enum.UserInputType.Touch then
+        userMoved = true
+        lockForever = false
+    end
+end)
+
 player.CharacterAdded:Connect(function(char)
     _isInGame = true
     characterReady = false
     hasTeleported = false
     lockForever = false
+    userMoved = false
     setupCharacter(char)
     if shared.autoFarm then
-        task.delay(5, fastTeleport)
+        task.delay(1, fastTeleport)
     end
 end)
 
@@ -244,7 +259,7 @@ task.spawn(function()
 end)
 
 RunService.Stepped:Connect(function()
-    if lockForever and shared.autoFarm and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+    if lockForever and shared.autoFarm and not userMoved and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local hrp = player.Character.HumanoidRootPart
         hrp.Velocity = Vector3.zero
         hrp.CFrame = CFrame.new(lockedPosition)
