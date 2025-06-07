@@ -1,28 +1,25 @@
---Updated Auto Farm!!!
--- 📌 Kích hoạt qua biến toàn cục từ UI chính
+--Updated Auto Farm!
 shared.autoFarm = shared.autoFarm or false
 
--- 📦 Dịch vụ Roblox
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GuiService = game:GetService("GuiService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
 
--- 🧍 Người chơi
 local player = Players.LocalPlayer
 local gui = player:WaitForChild("PlayerGui")
 
--- ⚙️ Biến trạng thái
 local _isInGame = false
 local currentFruit = nil
 local currentHumanoid = nil
 local characterReady = false
 local lockedPosition = nil
 local lockUntil = 0
+local lockForever = false
 local lastTeleportTime = 0
+local hasTeleported = false
 
--- 💥 Danh sách kỹ năng theo trái ác quỷ
 local skills = {
     Barrier = {"Barrier", "Bubble", "Crash", "Spikes"},
     Chop = {"Cannon", "Grab", "Car", "Festival"},
@@ -65,7 +62,7 @@ local skills = {
     DarkXQuake = {"AntiQuake", "BlackHolePath", "BlackTurret", "NeoKurouzuCombo", "AntiBody", "QuadraSeaQuake"},
     Okuchi = {"PrimalRage", "ArcticBreath", "DevastatingDrop", "HallowedCuts", "GlacialCoat", "DivineSerpent", "Transform"},
 }
--- ✅ Kiểm tra cooldown
+
 local function isSkillReady(skillName)
     local cdFolder = player:FindFirstChild("Cooldowns")
     if not cdFolder then return true end
@@ -75,9 +72,8 @@ local function isSkillReady(skillName)
     return not skillCD or skillCD.Value <= 0
 end
 
--- 🧬 Cập nhật trái hiện tại
 local function updateCurrentFruit()
-local mainData = player:FindFirstChild("MAIN_DATA")
+    local mainData = player:FindFirstChild("MAIN_DATA")
     if not mainData then return end
     local currentSlot = mainData:FindFirstChild("Slot")
     if not currentSlot then return end
@@ -85,7 +81,6 @@ local mainData = player:FindFirstChild("MAIN_DATA")
     currentFruit = slotValue and slotValue.Value or nil
 end
 
--- 👀 Theo dõi thay đổi slot trái
 local function watchSlotChanges()
     local mainData = player:WaitForChild("MAIN_DATA", 10)
     if not mainData then return end
@@ -95,25 +90,23 @@ local function watchSlotChanges()
     updateCurrentFruit()
 end
 
--- 💥 Gọi kỹ năng trái
 local function castSkill(fruit, skill)
-    if not fruit or not skill then return end
-    if not isSkillReady(skill) then return end
+    if not fruit or not skill or not isSkillReady(skill) then return end
+    if not shared.autoFarm then return end
 
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    -- Kiểm tra thời gian lock
-    if tick() < lockUntil then
+    if lockForever then
         hrp.Velocity = Vector3.zero
         hrp.CFrame = CFrame.new(lockedPosition)
     end
 
-    -- Nhắm ra xa phía trước thay vì ngay dưới chân
     local offset = hrp.CFrame.LookVector * 20
     local target = hrp.Position + offset
     local dir = (target - hrp.Position).Unit * 45
+
     local ray = {
         Normal = Vector3.yAxis,
         Direction = dir,
@@ -137,7 +130,6 @@ local function castSkill(fruit, skill)
     if not success then warn("[castSkill] Lỗi:", err) end
 end
 
--- 🔁 Vòng lặp spam kỹ năng
 local skillLoopRunning = false
 local function startSkillLoop()
     if skillLoopRunning then return end
@@ -161,8 +153,8 @@ local function startSkillLoop()
     end)
 end
 
--- 📍 Dịch chuyển và khóa vị trí
 local function fastTeleport()
+    if not shared.autoFarm then return end
     local character = player.Character
     if not character then return end
     local hrp = character:FindFirstChild("HumanoidRootPart")
@@ -179,11 +171,17 @@ local function fastTeleport()
 
     hrp.CFrame = CFrame.new(targetPos)
     lockedPosition = targetPos
-    lockUntil = tick() + 10
     lastTeleportTime = tick()
+    hasTeleported = true
+
+    task.delay(15, function()
+        if shared.autoFarm then
+            lockForever = true
+            lockUntil = math.huge
+        end
+    end)
 end
 
--- 🧠 Cài nhân vật
 local function setupCharacter(character)
     characterReady = false
     currentHumanoid = character:WaitForChild("Humanoid", 5)
@@ -205,19 +203,17 @@ local function setupCharacter(character)
     end)
 end
 
--- 👂 Theo dõi nhân vật mới
 player.CharacterAdded:Connect(function(char)
     _isInGame = true
     characterReady = false
+    hasTeleported = false
+    lockForever = false
     setupCharacter(char)
     if shared.autoFarm then
-        task.delay(5, function()
-            fastTeleport()
-        end)
+        task.delay(5, fastTeleport)
     end
 end)
 
--- 🚀 Nếu đã vào game
 if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
     _isInGame = true
     setupCharacter(player.Character)
@@ -226,7 +222,6 @@ if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
     end
 end
 
--- 🕹️ Tự động nhấn Play
 task.spawn(function()
     while true do
         if shared.autoFarm and not player.Character then
@@ -248,9 +243,8 @@ task.spawn(function()
     end
 end)
 
--- 🧲 Cố định vị trí nếu đang bị khóa
 RunService.Stepped:Connect(function()
-    if tick() < lockUntil and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+    if lockForever and shared.autoFarm and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local hrp = player.Character.HumanoidRootPart
         hrp.Velocity = Vector3.zero
         hrp.CFrame = CFrame.new(lockedPosition)
