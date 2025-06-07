@@ -427,7 +427,7 @@ Tabs.Main:AddToggle("Auto Find Boss", {
     end
 })
 --Auto Find Katakuri
-Tabs.Main:AddToggle("Auto Find Boss", {
+Tabs.Main:AddToggle("Auto Find Boss Katakuri", {
     Title = "Auto Find Boss(Katakuri)",
     Default = false,
     Callback = function(value)
